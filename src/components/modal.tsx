@@ -1,55 +1,55 @@
-import { JSX, createSignal } from "solid-js";
+import { JSX, Component } from "solid-js";
 
 interface ModalProps {
-    children: JSX.Element;
-    id: string
+  children: JSX.Element;
 }
 
 interface ModalContentProps {
-    title: string;
-    children: JSX.Element;
+  title: string;
+  children: JSX.Element;
 }
 
-const [id, setID] = createSignal("");
-
-const Modal = (props: ModalProps) => {
-    setID(props.id);
-
+const createModal = (modalId: string) => {
+  const Modal: Component<ModalProps> = (props) => {
     return (
-        <dialog id={id()} class="modal modal-bottom sm:modal-middle">
-            {props.children}
-        </dialog>
+      <dialog id={modalId} class="modal modal-bottom sm:modal-middle">
+        {props.children}
+      </dialog>
     );
-};
+  };
 
-const ModalContent = (props: ModalContentProps) => {
-    return <div class="modal-box">
+  const Content: Component<ModalContentProps> = (props) => {
+    return (
+      <div class="modal-box">
         <h3 class="font-bold text-lg">{props.title}</h3>
         {props.children}
-    </div>;
-};
-
-const CloseButton = (props: { title: string }) => {
-    return <div class="modal-action">
-        <form method="dialog">
-            <button class="btn">{props.title}</button>
-        </form>
-    </div>
-}
-
-Modal.Button = (props: { children: JSX.Element }) => {
-    return (
-        <button
-            class="btn"
-            // @ts-ignore
-            onClick={() => document.getElementById(id()).showModal()}
-        >
-            {props.children}
-        </button>
+      </div>
     );
+  };
+
+  const CloseButton: Component<{ title: string }> = (props) => {
+    return (
+      <div class="modal-action">
+        <form method="dialog">
+          <button class="btn">{props.title}</button>
+        </form>
+      </div>
+    );
+  };
+
+  const OpenButton: Component<{ children: JSX.Element }> = (props) => {
+    return (
+      <button
+        class="btn"
+        // @ts-ignore
+        onClick={() => document.getElementById(modalId)?.showModal()}
+      >
+        {props.children}
+      </button>
+    );
+  };
+
+  return { Modal, OpenButton, Content, CloseButton };
 };
 
-Modal.CloseButton = CloseButton;
-Modal.Content = ModalContent;
-
-export default Modal;
+export default createModal;
