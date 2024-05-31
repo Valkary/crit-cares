@@ -3,7 +3,6 @@ import createModal from "~/components/modal";
 
 export default function Dashboard() {
     const modal_0 = createModal("my-modal-0");
-    const modal_1 = createModal("my-modal-1");
 
     return <main>
         <modal_0.OpenButton>
@@ -13,19 +12,12 @@ export default function Dashboard() {
         <modal_0.Modal>
             <modal_0.Content title="Apache Score">
                 <ApacheScore />
-                <modal_0.CloseButton title="Cerrar" />
+
+                <div class="flex w-full justify-end gap-4">
+                    <button class="btn btn-success">Terminar</button>
+                    <button class="btn" onclick={modal_0.closeModal}>Cerrar</button>
+                </div>
             </modal_0.Content>
         </modal_0.Modal>
-
-        <modal_1.OpenButton>
-            <span>Test modal 1</span>
-        </modal_1.OpenButton>
-
-        <modal_1.Modal>
-            <modal_1.Content title="Test">
-                Test
-                <modal_0.CloseButton title="Cerrar" />
-            </modal_1.Content>
-        </modal_1.Modal>
     </main>
 }
