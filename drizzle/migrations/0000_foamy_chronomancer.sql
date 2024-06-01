@@ -1,5 +1,3 @@
-DROP TABLES;
-
 CREATE TABLE `apache_scores` (
 	`id` serial AUTO_INCREMENT NOT NULL,
 	`patient_id` bigint unsigned NOT NULL,
@@ -17,7 +15,7 @@ CREATE TABLE `follow_up_notes` (
 	`patient_id` bigint unsigned NOT NULL,
 	`doctor_id` bigint unsigned NOT NULL,
 	`description` text,
-	`apache_score_id` serial AUTO_INCREMENT,
+	`apache_score_id` bigint unsigned,
 	`creation_date` date NOT NULL,
 	CONSTRAINT `follow_up_notes_id` PRIMARY KEY(`id`)
 );

@@ -50,6 +50,6 @@ export const follow_up_notes = mysqlTable('follow_up_notes', {
     patient_id: bigint('patient_id', { mode: 'number', unsigned: true }).references(() => patients.id).notNull(),
     doctor_id: bigint('doctor_id', { mode: 'number', unsigned: true }).references(() => doctors.id).notNull(),
     description: text('description'),
-    apache_score_id: serial('apache_score_id').references(() => apache_scores.id),
+    apache_score_id: bigint('apache_score_id', { mode: 'number', unsigned: true }).references(() => apache_scores.id),
     creation_date: date('creation_date').notNull(),
 });

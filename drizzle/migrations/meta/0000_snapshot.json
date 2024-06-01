@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "5d799940-cabd-4c0b-af4e-e4d4b653442c",
+  "id": "b6c79ca9-9af8-4c7f-ba90-7b6e8d1ed912",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "apache_scores": {
@@ -111,10 +111,10 @@
         },
         "apache_score_id": {
           "name": "apache_score_id",
-          "type": "serial",
+          "type": "bigint unsigned",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": true
+          "autoincrement": false
         },
         "creation_date": {
           "name": "creation_date",
