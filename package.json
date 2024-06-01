@@ -7,6 +7,7 @@
     "start": "vinxi start",
     "migrate:generate": "npx drizzle-kit generate",
     "migrate:run": "npx tsx ./drizzle/migrate.ts",
+    "studio": "npx drizzle-kit studio",
     "migration": "npm run migrate:generate && npm run migrate:run"
   },
   "devDependencies": {
