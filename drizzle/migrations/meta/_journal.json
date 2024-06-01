@@ -1,0 +1,13 @@
+{
+  "version": "6",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1717206974058,
+      "tag": "0000_worried_madame_web",
+      "breakpoints": true
+    }
+  ]
+}

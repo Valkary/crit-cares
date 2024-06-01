@@ -1,10 +1,11 @@
-// import { type Config } from "drizzle-kit";
+import 'dotenv/config';
+import { type Config } from "drizzle-kit";
  
 export default {
+  dialect: "mysql",
   schema: "./drizzle/schema.ts",
   out: "./drizzle/migrations/",
-  driver: "better-sqlite",
   dbCredentials: {
-    url: './drizzle/db.sqlite',
+    url: process.env.VITE_DB_URL as string,
   },
-};
+} satisfies Config;

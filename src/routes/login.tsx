@@ -2,13 +2,9 @@ import {
   useSubmission,
   type RouteSectionProps
 } from "@solidjs/router";
-import { Show } from "solid-js";
-// import { loginOrRegister } from "~/api";
 import { User, KeyRound } from "lucide-solid";
 
 export default function Login(props: RouteSectionProps) {
-  // const loggingIn = useSubmission(loginOrRegister);
-
   return (
     <main>
       <div class="dark min-h-screen flex items-center justify-center">
