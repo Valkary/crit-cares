@@ -5,7 +5,7 @@ async function testApi() {
     try {
         const data = await fetch("http://localhost:3000/api/test");
         const json = await data.json();
-        console.log(json);
+        // console.log(json);
     } catch (err) {
         console.error(err);
     }

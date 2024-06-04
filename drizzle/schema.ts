@@ -2,6 +2,7 @@ import { bigint, boolean, date, float, int, mysqlEnum, mysqlTable, serial, text,
 
 export const users = mysqlTable('users', {
     id: serial('id').primaryKey(),
+    email: varchar('email', { length: 255 }).notNull(),
     names: varchar('names', { length: 255 }).notNull(),
     last_names: varchar('last_names', { length: 255 }).notNull(),
     password_hash: varchar('password_hash', { length: 60 }).notNull(),

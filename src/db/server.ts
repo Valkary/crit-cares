@@ -1,21 +1,21 @@
-"use server";
-// import { redirect } from "@solidjs/router";
+import { redirect } from "@solidjs/router";
 // import { useSession } from "vinxi/http";
 import { eq, sql } from "drizzle-orm";
 import { db } from "../../drizzle/db";
-// import { users } from "../../drizzle/schema";
+import { users } from "../../drizzle/schema";
+import { action } from "@solidjs/router";
 
-// function validateUsername(username: unknown) {
-//   if (typeof username !== "string" || username.length < 3) {
-//     return `Usernames must be at least 3 characters long`;
-//   }
-// }
+function validateUsername(username: unknown) {
+  if (typeof username !== "string" || username.length < 3) {
+    return `Usernames must be at least 3 characters long`;
+  }
+}
 
-// function validatePassword(password: unknown) {
-//   if (typeof password !== "string" || password.length < 6) {
-//     return `Passwords must be at least 6 characters long`;
-//   }
-// }
+function validatePassword(password: unknown) {
+  if (typeof password !== "string" || password.length < 6) {
+    return `Passwords must be at least 6 characters long`;
+  }
+}
 
 export async function getAllTables() {
   try {
@@ -26,10 +26,37 @@ export async function getAllTables() {
   }
 }
 
-// async function login(username: string, password: string) {
-//   const user = db.select().from(users).where(eq(users.username, username)).get();
-//   if (!user || password !== user.password) throw new Error("Invalid login");
-//   return user;
+async function login(formData: FormData) {
+  const email = String(formData.get("email"));
+  const password = String(formData.get("password"));
+
+  console.log(email, password);
+
+  const user = (await db.select().from(users).where(eq(users.email, email)).execute())[0];
+  if (!user || password !== user.password_hash) throw new Error("Invalid login");
+  
+  return redirect("/dashboard");
+}
+
+export const loginAction = action(login, "login");
+
+// export async function loginOrRegister(formData: FormData) {
+//   const username = String(formData.get("username"));
+//   const password = String(formData.get("password"));
+//   const loginType = String(formData.get("loginType"));
+//   let error = validateUsername(username) || validatePassword(password);
+//   if (error) return new Error(error);
+
+//   try {
+//     const user = await (loginType !== "login"
+//       ? register(username, password)
+//       : login(username, password));
+//     const session = await getSession();
+//     await session.update(d => (d.userId = user!.id));
+//   } catch (err) {
+//     return err as Error;
+//   }
+//   throw redirect("/");
 // }
 
 // async function register(username: string, password: string) {
@@ -51,25 +78,6 @@ export async function getAllTables() {
 //     password:
 //       process.env.SESSION_SECRET ?? "areallylongsecretthatyoushouldreplace",
 //   });
-// }
-
-// export async function loginOrRegister(formData: FormData) {
-//   const username = String(formData.get("username"));
-//   const password = String(formData.get("password"));
-//   const loginType = String(formData.get("loginType"));
-//   let error = validateUsername(username) || validatePassword(password);
-//   if (error) return new Error(error);
-
-//   try {
-//     const user = await (loginType !== "login"
-//       ? register(username, password)
-//       : login(username, password));
-//     const session = await getSession();
-//     await session.update(d => (d.userId = user!.id));
-//   } catch (err) {
-//     return err as Error;
-//   }
-//   throw redirect("/");
 // }
 
 // export async function logout() {
