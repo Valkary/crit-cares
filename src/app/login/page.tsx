@@ -1,6 +1,27 @@
+"use client";
 import { User, KeyRound, Ban } from "lucide-react";
+import { FormEvent, useContext, useState } from "react";
+import { AuthContext } from "~/context/auth";
+import { loginUser } from "~/data/users/login";
 
 export default function Login({}) {
+  const { loginUser: loginContextUser } = useContext(AuthContext);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  async function handleLogin(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const login = await loginUser({
+      email,
+      password
+    });
+
+    if (!login.success)
+      return console.log("Error");
+
+    loginContextUser(login.token);
+  }
+
   return (
     <main>
       <div className="dark min-h-screen flex items-center justify-center">
@@ -10,6 +31,7 @@ export default function Login({}) {
           <form
             method="post"
             className="mt-4 flex flex-col mb-4 gap-5"
+            onSubmit={e => handleLogin(e)}
           >
             <label className="input input-bordered flex items-center gap-2">
               Email
@@ -18,6 +40,8 @@ export default function Login({}) {
                 name="email"
                 className="grow"
                 placeholder="correo electrónico"
+                onChange={e => setEmail(e.currentTarget.value)}
+                value={email}
                 required
               />
               <User />
@@ -29,6 +53,8 @@ export default function Login({}) {
                 name="password"
                 className="grow"
                 placeholder="contraseña"
+                onChange={e => setPassword(e.currentTarget.value)}
+                value={password}
                 required
               />
               <KeyRound />

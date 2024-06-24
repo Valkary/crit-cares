@@ -1,9 +1,8 @@
 "use client";
 import { User, KeyRound, Ban, Check } from "lucide-react";
 import { FormEvent, useReducer, useState } from "react";
+import { UserRole } from "~/context/auth";
 import { registerUser } from "~/data/users/register";
-
-type Role = "admin" | "doctor" | "secretary" | "readonly";
 
 type RegisterForm = {
     email: string;
@@ -12,7 +11,7 @@ type RegisterForm = {
     password: string;
     confirm_password: string;
     phone: string,
-    role: Role;
+    role: UserRole;
 }
 
 const form: RegisterForm = {
@@ -22,7 +21,6 @@ const form: RegisterForm = {
     password: "",
     phone: "",
     confirm_password: "",
-
     role: "admin"
 };
 
@@ -141,7 +139,7 @@ export default function Register() {
                             <span className="flex-grow">Rol</span>
                             <select
                                 className="select select-bordered w-full max-w-xs"
-                                onChange={e => setFormState({ role: e.currentTarget.value as Role })}
+                                onChange={e => setFormState({ role: e.currentTarget.value as UserRole })}
                             >
                                 <option value={"admin"}>Administrador</option>
                                 <option value={"doctor"}>Doctor</option>

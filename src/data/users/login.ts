@@ -1,0 +1,63 @@
+"use server";
+import { eq } from "drizzle-orm";
+import { z } from "zod";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+
+import { env } from "~/env";
+import { db } from "~/server/db";
+import { users } from "~/server/db/schema";
+
+const login_schema = z.object({
+    email: z.string().email(),
+    password: z.string()
+});
+
+type LoginSchema = z.infer<typeof login_schema>;
+
+type SuccessfulLogin = {
+    success: true,
+    token: string
+}
+
+type UnsuccesfulLogin = {
+    success: false,
+    msg: string
+}
+
+export async function loginUser(login_creds: LoginSchema): Promise<SuccessfulLogin | UnsuccesfulLogin> {
+    const res = login_schema.safeParse(login_creds);
+
+    if (res.error)
+        return {
+            success: false,
+            msg: "Error en las credenciales"
+        };
+
+    const { email, password } = res.data;
+
+    const db_user = (await db.select().from(users).where(eq(users.email, email)).execute())[0];
+
+    if (!db_user)
+        return {
+            success: false,
+            msg: "Usuario o contraseña incorrectos"
+        };
+
+    if (!(await bcrypt.compare(password, db_user.password_hash)))
+        return {
+            success: false,
+            msg: "Usuario o contraseña incorrectos"
+        };
+
+    return {
+        success: true,
+        token: jwt.sign({
+            email: db_user.email,
+            names: db_user.names,
+            last_names: db_user.last_names,
+            role: db_user.role,
+            phone: db_user.phone
+        }, env.JWT_SECRET)
+    };
+}
