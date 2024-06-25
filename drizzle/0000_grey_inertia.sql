@@ -10,7 +10,7 @@ CREATE TABLE `apache_scores` (
 	`sodium` real NOT NULL,
 	`potassium` real NOT NULL,
 	`creatinine` real NOT NULL,
-	`creation_date` integer NOT NULL,
+	`creation_date` integer,
 	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -20,7 +20,7 @@ CREATE TABLE `follow_up_notes` (
 	`doctor_id` integer NOT NULL,
 	`description` text,
 	`apache_score_id` integer,
-	`creation_date` integer NOT NULL,
+	`creation_date` integer,
 	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`doctor_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action,
 	FOREIGN KEY (`apache_score_id`) REFERENCES `apache_scores`(`id`) ON UPDATE no action ON DELETE no action
@@ -31,7 +31,7 @@ CREATE TABLE `patient_documents` (
 	`patient_id` integer NOT NULL,
 	`name` text(255) NOT NULL,
 	`route` text(510) NOT NULL,
-	`creation_date` integer NOT NULL,
+	`creation_date` integer,
 	FOREIGN KEY (`patient_id`) REFERENCES `patients`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
@@ -42,12 +42,12 @@ CREATE TABLE `patients` (
 	`age` integer NOT NULL,
 	`phone` integer NOT NULL,
 	`admission_date` integer NOT NULL,
-	`mechanical_ventilation` integer NOT NULL,
-	`exitus_letalis` integer NOT NULL,
+	`mechanical_ventilation` integer,
+	`exitus_letalis` integer,
 	`doctor_id` integer,
-	`discharged` integer NOT NULL,
+	`discharged` integer,
 	`discharge_date` integer,
-	`creation_date` integer NOT NULL,
+	`creation_date` integer,
 	FOREIGN KEY (`doctor_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint

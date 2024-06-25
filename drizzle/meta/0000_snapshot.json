@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "3dd71fc2-d165-447d-b0ea-e2b1489fdf2f",
+  "id": "e6c964bd-3c51-4bb1-aa89-c5190b59d219",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "apache_scores": {
@@ -88,7 +88,7 @@
           "name": "creation_date",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -153,7 +153,7 @@
           "name": "creation_date",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -237,7 +237,7 @@
           "name": "creation_date",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },
@@ -309,14 +309,14 @@
           "name": "mechanical_ventilation",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "exitus_letalis": {
           "name": "exitus_letalis",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "doctor_id": {
@@ -330,7 +330,7 @@
           "name": "discharged",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         },
         "discharge_date": {
@@ -344,7 +344,7 @@
           "name": "creation_date",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true,
+          "notNull": false,
           "autoincrement": false
         }
       },

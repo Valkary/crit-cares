@@ -56,8 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         router.push("/login");
     }
 
-    console.log(user);
-
     return <AuthContext.Provider value={{ user, loginUser, logoutUser }}>
         {children}
     </AuthContext.Provider>

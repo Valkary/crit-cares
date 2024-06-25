@@ -16,7 +16,7 @@ export const patient_documents = sqliteTable('patient_documents', {
   patient_id: integer('patient_id').references(() => patients.id).notNull(),
   name: text('name', { length: 255 }).notNull(),
   route: text('route', { length: 510 }).notNull(),
-  creation_date: integer('creation_date', { mode: "timestamp" }).notNull(),
+  creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),
 });
 
 export const patients = sqliteTable('patients', {
@@ -26,12 +26,12 @@ export const patients = sqliteTable('patients', {
   age: integer('age').notNull(),
   phone: integer('phone').notNull(),
   admission_date: integer('admission_date', { mode: "timestamp" }).notNull(),
-  mechanical_ventilation: integer('mechanical_ventilation', { mode: "boolean" }).$default(() => false).notNull(),
-  exitus_letalis: integer('exitus_letalis', { mode: "boolean" }).$default(() => false).notNull(),
+  mechanical_ventilation: integer('mechanical_ventilation', { mode: "boolean" }).$default(() => false),
+  exitus_letalis: integer('exitus_letalis', { mode: "boolean" }).$default(() => false),
   doctor_id: integer('doctor_id').references(() => users.id),
-  discharged: integer('discharged', { mode: "boolean" }).$default(() => false).notNull(),
+  discharged: integer('discharged', { mode: "boolean" }).$default(() => false),
   discharge_date: integer('discharge_date', { mode: "timestamp" }),
-  creation_date: integer('creation_date', { mode: "timestamp" }).notNull(),
+  creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),
 });
 
 export const apache_scores = sqliteTable('apache_scores', {
@@ -46,7 +46,7 @@ export const apache_scores = sqliteTable('apache_scores', {
   sodium: real('sodium').notNull(),
   potassium: real('potassium').notNull(),
   creatinine: real('creatinine').notNull(),
-  creation_date: integer('creation_date', { mode: "timestamp" }).notNull(),
+  creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),
 })
 
 export const follow_up_notes = sqliteTable('follow_up_notes', {
@@ -55,5 +55,5 @@ export const follow_up_notes = sqliteTable('follow_up_notes', {
   doctor_id: integer('doctor_id').references(() => users.id).notNull(),
   description: text('description'),
   apache_score_id: integer('apache_score_id').references(() => apache_scores.id),
-  creation_date: integer('creation_date', { mode: "timestamp" }).notNull(),
+  creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),
 });

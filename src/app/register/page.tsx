@@ -1,6 +1,6 @@
 "use client";
 import { User, KeyRound, Ban, Check } from "lucide-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { FormEvent, useReducer, useState } from "react";
 import { UserRole } from "~/context/auth";
 import { registerUser } from "~/data/users/register";
@@ -35,6 +35,7 @@ function reducer(state: RegisterForm, action: RegisterFormAction): RegisterForm 
 }
 
 export default function Register() {
+    const router = useRouter();
     const [formState, setFormState] = useReducer(reducer, form);
     const [alert, setAlert] = useState({
         show: false,
@@ -56,7 +57,7 @@ export default function Register() {
 
         if (!data.success) setAlert({ show: true, msg: data.msg, error: true });
         else {
-            useRouter().push("/login");
+            router.push("/login");
             setAlert({ show: true, msg: data.msg, error: false })
         };
 
