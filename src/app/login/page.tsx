@@ -1,11 +1,13 @@
 "use client";
 import { User, KeyRound, Ban } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { FormEvent, useContext, useState } from "react";
 import { AuthContext } from "~/context/auth";
 import { loginUser } from "~/data/users/login";
 
 export default function Login({}) {
   const { loginUser: loginContextUser } = useContext(AuthContext);
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -20,6 +22,7 @@ export default function Login({}) {
       return console.log("Error");
 
     loginContextUser(login.token);
+    router.push("/logged/dashboard");
   }
 
   return (

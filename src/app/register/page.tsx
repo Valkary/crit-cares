@@ -1,5 +1,6 @@
 "use client";
 import { User, KeyRound, Ban, Check } from "lucide-react";
+import { useRouter } from "next/router";
 import { FormEvent, useReducer, useState } from "react";
 import { UserRole } from "~/context/auth";
 import { registerUser } from "~/data/users/register";
@@ -54,7 +55,10 @@ export default function Register() {
         });
 
         if (!data.success) setAlert({ show: true, msg: data.msg, error: true });
-        else setAlert({ show: true, msg: data.msg, error: false });
+        else {
+            useRouter().push("/login");
+            setAlert({ show: true, msg: data.msg, error: false })
+        };
 
         setTimeout(() => setAlert({ ...alert, show: false }), 5000);
     }
