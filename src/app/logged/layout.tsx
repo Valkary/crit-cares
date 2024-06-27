@@ -12,8 +12,8 @@ export default function Layout({ children }: { children: ReactNode }) {
         if (!user) router.push("/login");
     }, []);
 
-    return <>
+    return <main className="min-h-screen bg-slate-200">
         <Navbar user={user} />
         {children}
-    </>
+    </main>
 }

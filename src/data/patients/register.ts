@@ -5,6 +5,7 @@ import { env } from "~/env";
 import { db } from "~/server/db";
 import { patients, users } from "~/server/db/schema";
 import { eq } from "drizzle-orm";
+import { CreationResult, User } from "~/types";
 
 const register_patient_schema = z.object({
     user_token: z.string(),
@@ -19,29 +20,6 @@ const register_patient_schema = z.object({
 });
 
 type RegisterPatientSchema = z.infer<typeof register_patient_schema>;
-
-type CreationSuccess = {
-    success: true,
-    msg: string
-};
-
-type CreationError = {
-    success: false,
-    error_msg: string
-};
-
-export type UserRole = "admin" | "doctor" | "secretary" | "readonly";
-
-export type User = {
-    email: string,
-    names: string,
-    last_names: string,
-    role: UserRole,
-    phone: string,
-    token: string,
-}
-
-type CreationResult = CreationSuccess | CreationError;
 
 export async function registerPatient(patient: RegisterPatientSchema): Promise<CreationResult> {
     const parse_result = register_patient_schema.safeParse(patient);
