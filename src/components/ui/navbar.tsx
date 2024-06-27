@@ -6,7 +6,7 @@ export default function Navbar({ user }: { user: User | null }) {
 
     return <div className="navbar bg-base-100">
         <div className="navbar-start lg:flex-row-reverse">
-            <div className="drawer">
+            <div className="drawer z-20">
                 <input id="my-drawer" type="checkbox" className="drawer-toggle" />
                 <div className="drawer-content lg:hidden">
                     <label htmlFor="my-drawer" className="btn btn-ghost drawer-button"><MenuIcon /></label>

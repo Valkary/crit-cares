@@ -28,7 +28,7 @@ export const patients = sqliteTable('patients', {
   admission_date: integer('admission_date', { mode: "timestamp" }).notNull(),
   mechanical_ventilation: integer('mechanical_ventilation', { mode: "boolean" }).$default(() => false),
   exitus_letalis: integer('exitus_letalis', { mode: "boolean" }).$default(() => false),
-  doctor_id: integer('doctor_id').references(() => users.id),
+  doctor_id: integer('doctor_id').references(() => users.id).notNull(),
   discharged: integer('discharged', { mode: "boolean" }).$default(() => false),
   discharge_date: integer('discharge_date', { mode: "timestamp" }),
   creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),
