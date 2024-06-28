@@ -10,8 +10,9 @@ import { db } from "~/server/db";
 
 const create_followup_note_schema = z.object({
     user_token: z.string(),
+    patient_id: z.number().int(),
+    title: z.string(),
     description: z.string(),
-    patient_id: z.number().int()
 });
 
 type CreateFollowupNoteSchema = z.infer<typeof create_followup_note_schema>;
@@ -24,7 +25,7 @@ export async function create_followup_note(note: CreateFollowupNoteSchema): Prom
         error_msg: "Error in schema"
     };
 
-    const { user_token, description, patient_id } = res.data;
+    const { user_token, description, patient_id, title } = res.data;
 
     try {
         const { email } = jwt.verify(user_token, env.JWT_SECRET) as User;
@@ -41,6 +42,7 @@ export async function create_followup_note(note: CreateFollowupNoteSchema): Prom
         };
 
         await db.insert(follow_up_notes).values({
+            title,
             doctor_id: doctor.id,
             patient_id: patient_id,
             description

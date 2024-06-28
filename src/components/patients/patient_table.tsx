@@ -1,17 +1,18 @@
 "use client";
 import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { User } from "~/context/auth"
+import { useAuth } from "~/context/auth"
 import { PatientModel, get_doctor_patients } from "~/data/patients/get_patients"
 import DetailPatient from "./detail_patient";
 
-export default function PatientTable({ user }: { user: User }) {
+export default function PatientTable({ ServerComponent }: { ServerComponent: React.ReactNode }) {
+    const { user } = useAuth();
     const [patients, setPatients] = useState<PatientModel[]>([]);
     const [patientID, setPatientID] = useState<number | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
     async function fetchDoctorPatients() {
+        if (!user) return; 
         const req = await get_doctor_patients(user.token);
         if (req.success) setPatients(req.data);
     }
@@ -23,7 +24,7 @@ export default function PatientTable({ user }: { user: User }) {
 
     useEffect(() => {
         fetchDoctorPatients();
-    }, []);
+    }, [user]);
 
     return <div className="overflow-x-auto">
         <div className="drawer drawer-end z-20">
@@ -77,5 +78,6 @@ export default function PatientTable({ user }: { user: User }) {
                 }
             </tbody>
         </table>
+        {ServerComponent}
     </div>
 }

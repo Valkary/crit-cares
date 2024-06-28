@@ -53,6 +53,7 @@ export const follow_up_notes = sqliteTable('follow_up_notes', {
   id: integer('id').primaryKey(),
   patient_id: integer('patient_id').references(() => patients.id).notNull(),
   doctor_id: integer('doctor_id').references(() => users.id).notNull(),
+  title: text('title').notNull(),
   description: text('description'),
   apache_score_id: integer('apache_score_id').references(() => apache_scores.id),
   creation_date: integer('creation_date', { mode: "timestamp" }).$default(() => new Date()),

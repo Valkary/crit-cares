@@ -1,14 +1,15 @@
 import { FormEvent, ReactNode, useReducer, useRef, useState } from "react"
-import { UserPlus, Ban, Check, NotepadText } from 'lucide-react';
-import { registerPatient } from "~/data/patients/register";
+import { Ban, Check, NotepadText } from 'lucide-react';
 import { User } from "~/context/auth";
 import { create_followup_note } from "~/data/followup_notes/create_followup_note";
+import { useRouter } from "next/navigation";
 
 type CreatePatientForm = {
     patient_id: number,
     creator_token: string,
     description: string,
-    apache_score_id: number | null
+    apache_score_id: number | null,
+    title: string
 }
 
 type CreateStates = "idle" | "loading" | "error" | "success";
@@ -17,6 +18,7 @@ const create_followup_note_form: CreatePatientForm = {
     patient_id: 0,
     creator_token: "",
     description: "",
+    title: "",
     apache_score_id: null
 }
 
@@ -61,6 +63,7 @@ function reducer(state: CreatePatientForm, action: Partial<CreatePatientForm>): 
 
 export default function CreateFollowupNote({ user, patient_id }: { user: User, patient_id: number }) {
     const modalRef = useRef<HTMLDialogElement>(null);
+    const router = useRouter()
     const [formState, setFormState] = useReducer(reducer, {
         ...create_followup_note_form,
         creator_token: user.token,
@@ -74,11 +77,18 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
         const create_followup_note_req = await create_followup_note({
             user_token: user.token,
             patient_id: patient_id,
-            description: formState.description
+            description: formState.description,
+            title: formState.title
         });
 
-        if (create_followup_note_req.success) return setCreateState("success");
-        else return setCreateState("error");
+        if (create_followup_note_req.success) {
+            setCreateState("idle");
+            setFormState({ ...create_followup_note_form });
+            router.refresh();
+            modalRef.current?.close();
+        } else {
+            setCreateState("error");
+        }
     }
 
     function handleModalOpen() {
@@ -101,6 +111,16 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
                     className="mt-4 flex flex-col mb-4 gap-5"
                     onSubmit={e => submitForm(e)}
                 >
+                    <label className="input input-bordered flex items-center gap-2">
+                        Título
+                        <input
+                            type="text"
+                            className="grow"
+                            placeholder="título de la nota"
+                            value={formState.title}
+                            onChange={e => setFormState({ title: e.currentTarget.value })}
+                        />
+                    </label>
                     <textarea
                         className="textarea textarea-bordered"
                         placeholder="Descripción"

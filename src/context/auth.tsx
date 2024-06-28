@@ -34,7 +34,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const user_creds = localStorage.getItem("user_creds");
 
-        if (!user_creds) return;
+        if (!user_creds) {
+            router.push("/login")
+            return;
+        }
+        
         setUser(JSON.parse(user_creds) as User);
         router.push("/logged/dashboard");
     }, []);

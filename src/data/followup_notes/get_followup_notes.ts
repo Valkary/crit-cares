@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { InferSelectModel, and, eq } from "drizzle-orm";
+import { InferSelectModel, and, desc, eq } from "drizzle-orm";
 
 import { z } from "zod";
 import { follow_up_notes, users } from "~/server/db/schema";
@@ -13,9 +13,9 @@ const get_patient_followup_notes_schema = z.object({
 });
 
 type GetFollowupNotesSchema = z.infer<typeof get_patient_followup_notes_schema>;
-type FollowupNoteModel = InferSelectModel<typeof follow_up_notes>;
+export type FollowupNoteModel = InferSelectModel<typeof follow_up_notes>;
 
-export default async function get_followup_notes(follow_up_notes_patient_req: GetFollowupNotesSchema): Promise<FetchResult<FollowupNoteModel>> {
+export async function get_followup_notes(follow_up_notes_patient_req: GetFollowupNotesSchema): Promise<FetchResult<FollowupNoteModel>> {
     const res = get_patient_followup_notes_schema.safeParse(follow_up_notes_patient_req);
 
     if (res.error) return {
@@ -42,7 +42,7 @@ export default async function get_followup_notes(follow_up_notes_patient_req: Ge
                     eq(follow_up_notes.doctor_id, doctor.id),
                     eq(follow_up_notes.patient_id, patient_id)
                 )
-            )
+            ).orderBy(desc(follow_up_notes.creation_date))
         };
     } catch (err) {
         return {
@@ -50,4 +50,8 @@ export default async function get_followup_notes(follow_up_notes_patient_req: Ge
             error_msg: "Error fetching notes"
         };
     }
+}
+
+export async function get_patient_notes(patient_id: number) {
+    return await db.select().from(follow_up_notes).where(eq(follow_up_notes.patient_id, patient_id));
 }

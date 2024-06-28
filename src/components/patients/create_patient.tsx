@@ -1,7 +1,8 @@
+"use client";
 import { FormEvent, ReactNode, useReducer, useRef, useState } from "react"
 import { UserPlus, Ban, Check } from 'lucide-react';
 import { registerPatient } from "~/data/patients/register";
-import { User } from "~/context/auth";
+import { useAuth } from "~/context/auth";
 
 type CreatePatientForm = {
     names: string,
@@ -66,7 +67,8 @@ function reducer(state: CreatePatientForm, action: Partial<CreatePatientForm>): 
     };
 }
 
-export default function CreatePatient({ user}: {user: User}) {
+export default function CreatePatient() {
+    const { user } = useAuth();
     const modalRef = useRef<HTMLDialogElement>(null);
     const [formState, setFormState] = useReducer(reducer, create_patient_form);
     const [createState, setCreateState] = useState<CreateStates>("idle");
@@ -75,17 +77,17 @@ export default function CreatePatient({ user}: {user: User}) {
         e.preventDefault();
         setCreateState("loading");
 
-        const create_patient_req = await registerPatient({ ...formState, user_token: user.token });
-
-        if (create_patient_req.success) return setCreateState("success");
-        else return setCreateState("error");
+        if (user) {
+            const create_patient_req = await registerPatient({ ...formState, user_token: user.token });
+    
+            if (create_patient_req.success) return setCreateState("success");
+            else return setCreateState("error");
+        }
     }
 
     function handleModalOpen() {
         modalRef.current?.showModal()
     }
-
-    console.log(formState);
 
     return <>
         <button className="btn" onClick={handleModalOpen}>
@@ -154,7 +156,6 @@ export default function CreatePatient({ user}: {user: User}) {
                         <input
                             type="date"
                             name="admission_date"
-                            // value={formState.admission_date.toISOString()}
                             onChange={e => setFormState({ admission_date: new Date(e.currentTarget.value) })}
                             required
                         />

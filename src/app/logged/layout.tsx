@@ -1,19 +1,10 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { ReactNode, useContext, useEffect } from "react";
+"use server";
+import { ReactNode } from "react";
 import Navbar from "~/components/ui/navbar";
-import { AuthContext } from "~/context/auth";
 
-export default function Layout({ children }: { children: ReactNode }) {
-    const { user } = useContext(AuthContext);
-    const router = useRouter();
-
-    useEffect(() => {
-        if (!user) router.push("/login");
-    }, []);
-
+export default async function Layout({ children }: { children: ReactNode }) {
     return <main className="min-h-screen w-screen overflow-hidden bg-slate-200">
-        <Navbar user={user} />
+        <Navbar />
         {children}
     </main>
 }

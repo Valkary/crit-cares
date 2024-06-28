@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "89b786d6-0451-4b7c-a90b-7b12b6fdb31b",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "f50bd131-9bbe-49ab-93ad-cb2a3e60cf6c",
+  "prevId": "89b786d6-0451-4b7c-a90b-7b12b6fdb31b",
   "tables": {
     "apache_scores": {
       "name": "apache_scores",
@@ -139,7 +139,7 @@
           "name": "title",
           "type": "text",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "description": {

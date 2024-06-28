@@ -2,6 +2,8 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { AuthProvider } from "~/context/auth";
+import { ModalContextProvider } from "~/context/modal";
+import Modal from "~/components/ui/modal";
 
 export const metadata = {
   title: "Create T3 App",
@@ -17,7 +19,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <AuthProvider>
-        <body>{children}</body>
+        <ModalContextProvider>
+          <Modal />
+          <body>{children}</body>
+        </ModalContextProvider>
       </AuthProvider>
     </html>
   );

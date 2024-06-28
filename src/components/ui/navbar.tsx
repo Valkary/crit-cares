@@ -1,8 +1,9 @@
+"use client";
 import { MenuIcon } from "lucide-react";
-import { User, useAuth } from "~/context/auth";
+import { useAuth } from "~/context/auth";
 
-export default function Navbar({ user }: { user: User | null }) {
-    const { logoutUser } = useAuth();
+export default function Navbar() {
+    const { user, logoutUser } = useAuth();
 
     return <div className="navbar bg-base-100">
         <div className="navbar-start lg:flex-row-reverse">
