@@ -3,23 +3,62 @@ import { Ban, Check, NotepadText } from 'lucide-react';
 import { User } from "~/context/auth";
 import { create_followup_note } from "~/data/followup_notes/create_followup_note";
 import { useRouter } from "next/navigation";
+import ApacheScore from "./apache_score_form";
 
 type CreatePatientForm = {
     patient_id: number,
     creator_token: string,
     description: string,
-    apache_score_id: number | null,
-    title: string
+    apache_score: boolean,
+    title: string,
 }
 
+export type ApacheScoreForm = {
+    age: number,
+    temperature: number,
+    blood_pressure: number,
+    ph: number,
+    heart_rate: number,
+    respiratory_rate: number,
+    sodium: number,
+    potassium: number,
+    creatinine: number,
+};
+
 type CreateStates = "idle" | "loading" | "error" | "success";
+
+const apache_score_form: ApacheScoreForm = {
+    age: 0,
+    temperature: 0,
+    blood_pressure: 0,
+    ph: 0,
+    heart_rate: 0,
+    respiratory_rate: 0,
+    sodium: 0,
+    potassium: 0,
+    creatinine: 0,
+};
+
+function apache_reducer(state: ApacheScoreForm, action: Partial<ApacheScoreForm>): ApacheScoreForm {
+    return {
+        ...state,
+        ...action,
+    };
+}
 
 const create_followup_note_form: CreatePatientForm = {
     patient_id: 0,
     creator_token: "",
     description: "",
     title: "",
-    apache_score_id: null
+    apache_score: false
+}
+
+function followup_reducer(state: CreatePatientForm, action: Partial<CreatePatientForm>): CreatePatientForm {
+    return {
+        ...state,
+        ...action,
+    };
 }
 
 const button_states: Record<CreateStates, ReactNode> = {
@@ -27,7 +66,7 @@ const button_states: Record<CreateStates, ReactNode> = {
         type="submit"
         className="btn btn-primary w-full py-2 px-4 rounded-md"
     >
-        <span>Crear paciente</span>
+        <span>Crear nota</span>
     </button>,
     loading: <button
         type="submit"
@@ -41,7 +80,7 @@ const button_states: Record<CreateStates, ReactNode> = {
         className="btn btn-error w-full py-2 px-4 rounded-md"
     >
         <Ban />
-        <span>Error creando paciente</span>
+        <span>Error creando nota</span>
     </button>,
     success: <button
         type="submit"
@@ -49,36 +88,33 @@ const button_states: Record<CreateStates, ReactNode> = {
         disabled
     >
         <Check />
-        <span>Paciente creado</span>
+        <span>Nota creada</span>
     </button>
-
-}
-
-function reducer(state: CreatePatientForm, action: Partial<CreatePatientForm>): CreatePatientForm {
-    return {
-        ...state,
-        ...action,
-    };
 }
 
 export default function CreateFollowupNote({ user, patient_id }: { user: User, patient_id: number }) {
     const modalRef = useRef<HTMLDialogElement>(null);
     const router = useRouter()
-    const [formState, setFormState] = useReducer(reducer, {
+    const [formState, setFormState] = useReducer(followup_reducer, {
         ...create_followup_note_form,
         creator_token: user.token,
     });
+    const [apacheFormState, setApacheFormState] = useReducer(apache_reducer, {...apache_score_form});
+
     const [createState, setCreateState] = useState<CreateStates>("idle");
 
     async function submitForm(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setCreateState("loading");
 
+        // @ts-ignore
         const create_followup_note_req = await create_followup_note({
             user_token: user.token,
             patient_id: patient_id,
             description: formState.description,
-            title: formState.title
+            title: formState.title,
+            apache_score: formState.apache_score,
+            apache_score_obj: formState.apache_score ? apacheFormState : null
         });
 
         if (create_followup_note_req.success) {
@@ -105,7 +141,7 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
                 <form method="dialog">
                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
-                <h3 className="font-bold text-lg">Crear paciente</h3>
+                <h3 className="font-bold text-lg">Crear nota de seguimiento</h3>
                 <form
                     method="post"
                     className="mt-4 flex flex-col mb-4 gap-5"
@@ -119,6 +155,7 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
                             placeholder="título de la nota"
                             value={formState.title}
                             onChange={e => setFormState({ title: e.currentTarget.value })}
+                            required
                         />
                     </label>
                     <textarea
@@ -126,7 +163,27 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
                         placeholder="Descripción"
                         value={formState.description}
                         onChange={e => setFormState({ description: e.currentTarget.value })}
+                        required
                     />
+
+                    <label className="label cursor-pointer">
+                        <span className="label-text">Apache score</span>
+                        <input
+                            type="checkbox"
+                            className="toggle"
+                            checked={formState.apache_score}
+                            onChange={() => setFormState({ apache_score: !formState.apache_score })}
+                        />
+                    </label>
+
+                    {
+                        formState.apache_score &&
+                        <ApacheScore
+                            formState={apacheFormState}
+                            setFormState={setApacheFormState}
+                        />
+                    }
+
                     {button_states[createState]}
                 </form>
             </div>

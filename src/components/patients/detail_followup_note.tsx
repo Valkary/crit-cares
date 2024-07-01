@@ -1,24 +1,32 @@
-"use client";
-import { FolderSearch } from "lucide-react";
-import { useModalContext } from "~/context/modal";
-import { FollowupNoteModel } from "~/data/followup_notes/get_followup_notes";
+"use server"
 
-type Props = { patient_id: number, note: FollowupNoteModel };
+import { sql, eq } from "drizzle-orm";
+import { db } from "~/server/db";
+import { follow_up_notes, patients } from "~/server/db/schema";
 
-export default function DetailFollowupNote({ patient_id, note }: Props) {
-    const { showModal, setContent } = useModalContext();
+export default async function DetailFollowupNote({ note_id }: { note_id: number }) {
+    const patient_note = (await db.select({
+        note_id: follow_up_notes.id,
+        patient_id: patients.id,
+        patient_name: sql<string>`concat(${patients.names},' ',${patients.last_names})`,
+        note_title: follow_up_notes.title,
+        note_description: follow_up_notes.description,
+        note_date: follow_up_notes.creation_date,
+    }).from(follow_up_notes)
+        .where(
+            eq(follow_up_notes.id, note_id)
+        )
+        .innerJoin(patients,
+            eq(patients.id, follow_up_notes.patient_id)
+        ))[0];
 
-    function openModal() {
-        setContent({
-            title: "Test title",
-            body: <>Test body</>
-        });
-        showModal();
-    }
+    if (!patient_note) return <>Error fetching note</>
 
-    return (
-        <button className="btn btn-ghost" onClick={openModal}>
-            <FolderSearch />
-        </button>
-    );
+    
+    return <div className="flex flex-col gap-2">
+        <span>{patient_note.note_title}</span>
+        <span>{patient_note.note_date?.toLocaleDateString()}</span>
+        <span>{patient_note.note_description}</span>
+        <span>Patient Name {patient_note.patient_name}</span>
+    </div>
 }

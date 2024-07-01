@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
-import { InferSelectModel, and, desc, eq } from "drizzle-orm";
+import { InferSelectModel, and, desc, eq, sql } from "drizzle-orm";
 
 import { z } from "zod";
-import { follow_up_notes, users } from "~/server/db/schema";
+import { follow_up_notes, patients, users } from "~/server/db/schema";
 import { FetchResult, User } from "~/types";
 import { env } from "~/env";
 import { db } from "~/server/db";
