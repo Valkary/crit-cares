@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const user_creds = localStorage.getItem("user_creds");
 
         if (!user_creds) {
-            router.push("/login")
+            router.push("/login");
             return;
         }
         
