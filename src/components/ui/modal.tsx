@@ -12,8 +12,8 @@ export default function Modal() {
       modalRef.current?.close()
   }, [isOpen]);
 
-  return <dialog className="modal" ref={modalRef}>
-    <div className="modal-box">
+  return <dialog className="modal modal-bottom sm:modal-middle min-w-fit" ref={modalRef}>
+    <div className="modal-box overflow-hidden">
       <h3 className="font-bold text-lg">{content.title}</h3>
       <Suspense fallback={<span>loading content...</span>}>
         {content.body}

@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type UserRole = "admin" | "doctor" | "secretary" | "readonly";
 
 export type User = {
@@ -27,3 +29,25 @@ export type FetchSuccess<T> = {
 };
 
 export type FetchResult<T> = FetchSuccess<T> | CreationError;
+
+export const MAX_FILE_SIZE = 5_000_000;
+
+export const ACCEPTED_FILE_TYPES = [
+    "image/jpeg",
+    "image/jpg",
+    "image/png",
+    "image/webp",
+    "application/pdf",
+];
+
+export const file_schema = z
+    .instanceof(File, { message: "Agrega un archivo válido." })
+    .refine((file) => {
+        if (file.size === 0 || file.name === undefined) return false;
+        else return true;
+    }, "Agrega un archivo válido.")
+    .refine(
+        (file) => ACCEPTED_FILE_TYPES.includes(file?.type),
+        `Solo archivos de tipo: ${ACCEPTED_FILE_TYPES.map(type => `.${type.split('/')[1]}`).join(", ")}`
+    )
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Archivo excede ${MAX_FILE_SIZE / 1_000_000}MB.`);

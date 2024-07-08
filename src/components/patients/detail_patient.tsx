@@ -4,7 +4,7 @@ import { PatientModel } from "~/data/patients/get_patients";
 import EditPatient from "./edit_patient_form";
 import CreateFollowupNote from "./create_followup_note";
 import { User, useAuth } from "~/context/auth";
-import { ReactNode, Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import FollowupNoteHistory from "./followup_notes_history";
 import UploadFile from "./upload_file";
 import PatientFiles from "./patient_files";
@@ -22,7 +22,7 @@ export default function DetailPatient({ patient_data }: Props) {
     if (!patient_data) return <span>No patient data!</span>
 
     return (
-        <div className="w-full bg-white rounded-lg shadow-md p-6">
+        <div className="w-full bg-white rounded-lg shadow-md p-6 flex flex-col gap-2">
             <h2 className="text-2xl font-semibold text-primary text-center mb-4">Perfil de Paciente</h2>
             <EditPatient patient_data={patient_data} />
             

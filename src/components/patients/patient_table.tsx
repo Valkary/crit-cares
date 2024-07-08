@@ -5,7 +5,7 @@ import { useAuth } from "~/context/auth"
 import { PatientModel, get_doctor_patients } from "~/data/patients/get_patients"
 import DetailPatient from "./detail_patient";
 
-export default function PatientTable({ ServerComponent }: { ServerComponent: React.ReactNode }) {
+export default function PatientTable({ ServerComponent }: { ServerComponent: React.ReactNode[] }) {
     const { user } = useAuth();
     const [patients, setPatients] = useState<PatientModel[]>([]);
     const [patientID, setPatientID] = useState<number | null>(null);
