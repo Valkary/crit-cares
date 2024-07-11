@@ -8,14 +8,16 @@ import { Suspense, useState } from "react";
 import FollowupNoteHistory from "./followup_notes_history";
 import UploadFile from "./upload_file";
 import PatientFiles from "./patient_files";
+import { X } from "lucide-react";
 
 type Props = {
-    patient_data: PatientModel | null
+    patient_data: PatientModel | null,
+    closeDrawer: () => void
 };
 
 type Tabs = "notes" | "documents";
 
-export default function DetailPatient({ patient_data }: Props) {
+export default function DetailPatient({ patient_data, closeDrawer }: Props) {
     const { user } = useAuth();
     const [tab, setTab] = useState<Tabs>("notes");
 
@@ -23,6 +25,9 @@ export default function DetailPatient({ patient_data }: Props) {
 
     return (
         <div className="w-full bg-white rounded-lg shadow-md p-6 flex flex-col gap-2">
+            <button className="btn btn-ghost btn-circle flex md:hidden" onClick={closeDrawer}>
+                <X />
+            </button>
             <h2 className="text-2xl font-semibold text-primary text-center mb-4">Perfil de Paciente</h2>
             <EditPatient patient_data={patient_data} />
             

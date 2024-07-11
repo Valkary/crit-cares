@@ -22,6 +22,10 @@ export default function PatientTable({ ServerComponent }: { ServerComponent: Rea
         setIsDrawerOpen(true);
     }
 
+    function closeDrawer() {
+        setIsDrawerOpen(false);
+    }
+
     useEffect(() => {
         fetchDoctorPatients();
     }, [user]);
@@ -32,7 +36,7 @@ export default function PatientTable({ ServerComponent }: { ServerComponent: Rea
             <div className="drawer-side">
                 <div aria-label="close sidebar" className="drawer-overlay" onClick={() => setIsDrawerOpen(false)} />
                 <ul className="menu bg-base-200 text-base-content min-h-full w-full md:w-2/3 lg:w-1/2 p-4">
-                    {patientID !== null && <DetailPatient patient_data={patients[patientID] as PatientModel} />}
+                    {patientID !== null && <DetailPatient closeDrawer={closeDrawer} patient_data={patients[patientID] as PatientModel} />}
                 </ul>
             </div>
         </div>

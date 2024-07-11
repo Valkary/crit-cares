@@ -38,7 +38,7 @@ export default async function DetailFollowupNote({ note_id }: { note_id: number 
 
     if (!patient_note) return <>Error fetching note</>
 
-    return <div className="flex flex-col gap-2">
+    return <div className="flex flex-col gap-2 w-full">
         <span>{patient_note.note_title}</span>
         <span>{patient_note.note_date?.toLocaleDateString()}</span>
         <span>{patient_note.note_description}</span>

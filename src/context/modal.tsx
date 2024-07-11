@@ -1,27 +1,35 @@
 "use client";
-import { useState, createContext, useContext, ReactNode } from "react";
+import { createContext, useContext, ReactNode, useReducer } from "react";
+
+export type ModalSizes = "sm" | "md" | "lg";
 
 type ModalContent = {
     title: string,
-    body: ReactNode
+    body: ReactNode,
+    size: ModalSizes
 }
 
-type ModalContextType = {
+type ModalValues = {
     isOpen: boolean,
     content: ModalContent,
-    setContent: (content: ModalContent) => void,
+}
+
+type ModalFunctions = {
     hideModal: () => void,
-    showModal: () => void,
+    showModal: (content?: ModalContent) => void,
     toggleModal: () => void
-};
+}
+
+
+type ModalContextType = ModalValues & ModalFunctions;
 
 const initial_modal_context: ModalContextType = {
     isOpen: false,
     content: {
         title: "",
-        body: <></>
+        body: <></>,
+        size: "md",
     },
-    setContent: () => {},
     hideModal: () => {},
     showModal: () => {},
     toggleModal: () => {},
@@ -29,21 +37,36 @@ const initial_modal_context: ModalContextType = {
 
 const ModalContext = createContext<ModalContextType>(initial_modal_context);
 
-export function ModalContextProvider({ children }: { children: ReactNode }) {
-    const [open, setOpen] = useState(false);
-    const [content, setContent] = useState<ModalContent>({
-        title: "",
-        body: <></>
-    });
+function reducer(state: ModalValues, action: Partial<ModalValues>): ModalValues {
+    return {
+        ...state,
+        ...action
+    }
+}
 
-    const hideModal = () => setOpen(false);
-    const showModal = () => setOpen(true);
-    const toggleModal = () => setOpen(!open);
+export function ModalContextProvider({ children }: { children: ReactNode }) {
+    const [modalState, setModalState] = useReducer(reducer, initial_modal_context);
+
+    function showModal(content?: ModalContent) {
+        setModalState({
+            ...modalState,
+            isOpen: true,
+            content: content ?? modalState.content
+        });
+    }
+
+    function hideModal() {
+        setModalState({ ...modalState, isOpen: false });
+    }
+
+    function toggleModal() {
+        setModalState({ ...modalState, isOpen: !modalState.isOpen });
+    }
+
+    console.log(modalState.content);
 
     return <ModalContext.Provider value={{
-        isOpen: open,
-        content,
-        setContent,
+        ...modalState,
         showModal,
         hideModal,
         toggleModal,

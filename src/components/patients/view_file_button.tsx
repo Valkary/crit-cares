@@ -11,14 +11,14 @@ type Props = {
 };
 
 export default function ViewFileButton({ file }: Props) {
-    const { showModal, setContent } = useModalContext();
+    const { showModal } = useModalContext();
 
     function openModal() {
-        setContent({
+        showModal({
             title: file.name,
-            body: <FileView file_id={file.id} />
+            body: <FileView file_id={file.id} />,
+            size: "lg"
         });
-        showModal();
     }
 
     return <button className="btn btn-ghost" onClick={openModal}>
