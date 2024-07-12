@@ -63,8 +63,6 @@ export function ModalContextProvider({ children }: { children: ReactNode }) {
         setModalState({ ...modalState, isOpen: !modalState.isOpen });
     }
 
-    console.log(modalState.content);
-
     return <ModalContext.Provider value={{
         ...modalState,
         showModal,
