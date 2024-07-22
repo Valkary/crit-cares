@@ -1,3 +1,4 @@
+"use server";
 import jwt from "jsonwebtoken";
 import { InferSelectModel, and, desc, eq, sql } from "drizzle-orm";
 

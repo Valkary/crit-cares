@@ -20,7 +20,7 @@ export default async function PatientFiles({ patient_id }: { patient_id: number 
             </thead>
             <tbody>
                 {files.map(file => {
-                    return <tr>
+                    return <tr key={file.id}>
                         <th>{file.name}</th>
                         <td>{file.creation_date?.toLocaleDateString()}</td>
                         <td>

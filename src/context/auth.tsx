@@ -1,22 +1,14 @@
 "use client";
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-import jwt from "jwt-client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import type { User } from "~/types";
+import { logout } from "~/data/users/login";
 
 export type UserRole = "admin" | "doctor" | "secretary" | "readonly";
 
-export type User = {
-    email: string,
-    names: string,
-    last_names: string,
-    role: UserRole,
-    phone: string,
-    token: string,
-}
-
 export type UserContext = {
     user: User | null,
-    loginUser: (token: string) => void,
+    loginUser: (user: User) => void,
     logoutUser: () => void,
 }
 
@@ -26,38 +18,39 @@ export const AuthContext = createContext<UserContext>({
     logoutUser: () => { },
 });
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export default function AuthContextProvider({ children }: { children: ReactNode }) {
     const router = useRouter();
+    const path = usePathname();
     const [user, setUser] = useState<User | null>(null);
+
+    console.log(user);
+
+    function checkUserCreds() {
+        if (user !== null)
+            return true;
+
+        const user_creds = localStorage.getItem("user_creds");
+        if (!user_creds) return false;
+        setUser(JSON.parse(user_creds) as User);
+        return true;
+    }
 
     // Get user credentials from local storage if they exist
     useEffect(() => {
-        const user_creds = localStorage.getItem("user_creds");
+        if (!checkUserCreds())
+            router.push("/login?toast=error&msg=Usuario no definido");
+    }, [path]);
 
-        if (!user_creds) {
-            router.push("/login");
-            return;
-        }
-        
-        setUser(JSON.parse(user_creds) as User);
-        router.push("/logged/dashboard");
-    }, []);
-
-    function loginUser(token: string) {
-        const tmp_user = jwt.read(token).claim as User;
-        const credentials = {
-            ...tmp_user,
-            token,
-        }
-
-        localStorage.setItem("user_creds", JSON.stringify(credentials));
-        setUser(credentials);
+    function loginUser(user: User) {
+        localStorage.setItem("user_creds", JSON.stringify(user));
+        setUser(user);
     }
 
     function logoutUser() {
         localStorage.removeItem("user_creds");
         setUser(null);
-        router.push("/login");
+        logout();
+        // router.push("/login");
     }
 
     return <AuthContext.Provider value={{ user, loginUser, logoutUser }}>

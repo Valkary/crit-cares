@@ -6,7 +6,7 @@ import DetailFollowupNote from "./detail_followup_note";
 
 type Props = { patient_id: number, note: FollowupNoteModel };
 
-export default function DetailFollowupNoteButton({ patient_id, note }: Props) {
+export default function DetailFollowupNoteButton({ note }: Props) {
     const { showModal } = useModalContext();
 
     function openModal() {

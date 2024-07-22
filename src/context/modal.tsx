@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, ReactNode, useReducer } from "react";
+import Modal from "~/components/ui/modal";
 
 export type ModalSizes = "sm" | "md" | "lg";
 
@@ -44,7 +45,7 @@ function reducer(state: ModalValues, action: Partial<ModalValues>): ModalValues 
     }
 }
 
-export function ModalContextProvider({ children }: { children: ReactNode }) {
+export default function ModalContextProvider({ children }: { children: ReactNode }) {
     const [modalState, setModalState] = useReducer(reducer, initial_modal_context);
 
     function showModal(content?: ModalContent) {

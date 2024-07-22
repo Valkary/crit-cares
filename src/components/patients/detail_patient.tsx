@@ -1,70 +1,59 @@
-"use client";
+"use server";
 
-import { PatientModel } from "~/data/patients/get_patients";
+import { cookies } from 'next/headers';
+import { redirect } from "next/navigation";
+import { NotepadText } from 'lucide-react';
+import { Suspense } from 'react';
+
+import FollowupNoteHistory from './followup_notes_history';
 import EditPatient from "./edit_patient_form";
-import CreateFollowupNote from "./create_followup_note";
-import { User, useAuth } from "~/context/auth";
-import { Suspense, useState } from "react";
-import FollowupNoteHistory from "./followup_notes_history";
-import UploadFile from "./upload_file";
-import PatientFiles from "./patient_files";
-import { X } from "lucide-react";
+import CreateFollowupNote from './create_followup_note';
+import { PatientModel } from "~/data/patients/get_patients";
+import { ModalButton } from '../ui/modal';
+import Tabs from '../ui/tabs';
+import PatientFiles from './patient_files';
+import UploadFile from './upload_file';
 
 type Props = {
-    patient_data: PatientModel | null,
-    closeDrawer: () => void
+    patient_data: PatientModel,
 };
 
 type Tabs = "notes" | "documents";
 
-export default function DetailPatient({ patient_data, closeDrawer }: Props) {
-    const { user } = useAuth();
-    const [tab, setTab] = useState<Tabs>("notes");
+export default async function DetailPatient({ patient_data }: Props) {
+    const token = cookies().get('token')?.value;
 
-    if (!patient_data) return <span>No patient data!</span>
+    if (!token)
+        return redirect("/login?toast=error&msg=Usuario no definido");
 
     return (
         <div className="w-full bg-white rounded-lg shadow-md p-6 flex flex-col gap-2">
-            <button className="btn btn-ghost btn-circle flex md:hidden" onClick={closeDrawer}>
-                <X />
-            </button>
             <h2 className="text-2xl font-semibold text-primary text-center mb-4">Perfil de Paciente</h2>
             <EditPatient patient_data={patient_data} />
-            
-            <div role="tablist" className="tabs tabs-boxed">
-                <a role="tab"
-                    className={`tab ${tab === "notes" && "tab-active"}`}
-                    onClick={() => setTab("notes")}
-                >
-                    Notas de seguimiento
-                </a>
-                <a role="tab"
-                    className={`tab ${tab === "documents" && "tab-active"}`}
-                    onClick={() => setTab("documents")}
-                >
-                    Documentos
-                </a>
-            </div>
 
-            {
-                tab === "notes" && <>
-                    <h3 className="text-xl font-semibold text-primary mb-4">Notas de seguimiento</h3>
-                    <CreateFollowupNote user={user as User} patient_id={patient_data.id} />
-                    <Suspense fallback={<span>loading...</span>}>
+            <h3 className="text-xl font-semibold text-primary mb-4">Notas de seguimiento</h3>
+
+
+            <Tabs tabs={{
+                notes: {
+                    title: "Notas de seguimiento",
+                    content: <>
+                        <ModalButton modalContent={<CreateFollowupNote token={token} patient_id={patient_data.id} />}>
+                            <NotepadText />
+                            Crear nota
+                        </ModalButton>
                         <FollowupNoteHistory patient_id={patient_data.id} />
-                    </Suspense>
-                </>
-            }
-
-            {
-                tab === "documents" && <>
-                    <h3 className="text-xl font-semibold text-primary mb-4">Documentos</h3>
-                    <UploadFile patient_id={patient_data.id} user={user as User} />
-                    <Suspense fallback={<span>loading...</span>}>
+                    </>,
+                },
+                documents: {
+                    title: "Documentos",
+                    content: <>
+                        <UploadFile token={token} patient_id={patient_data.id} />
                         <PatientFiles patient_id={patient_data.id} />
-                    </Suspense>
-                </>
-            }
+                    </>
+                }
+            }} />
+
         </div>
     );
 }

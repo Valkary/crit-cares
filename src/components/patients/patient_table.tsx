@@ -11,12 +11,6 @@ export default function PatientTable({ ServerComponent }: { ServerComponent: Rea
     const [patientID, setPatientID] = useState<number | null>(null);
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    async function fetchDoctorPatients() {
-        if (!user) return; 
-        const req = await get_doctor_patients(user.token);
-        if (req.success) setPatients(req.data);
-    }
-
     function openPatientDetailView(patient_id: number) {
         setPatientID(patient_id);
         setIsDrawerOpen(true);
@@ -27,12 +21,16 @@ export default function PatientTable({ ServerComponent }: { ServerComponent: Rea
     }
 
     useEffect(() => {
-        fetchDoctorPatients();
+        (async () => {
+            if (!user) return;
+            const req = await get_doctor_patients(user.token);
+            if (req.success) setPatients(req.data);
+        })();
     }, [user]);
 
     return <div className="overflow-x-auto">
         <div className="drawer drawer-end z-20">
-            <input type="checkbox" className="drawer-toggle" checked={isDrawerOpen} />
+            <input type="checkbox" className="drawer-toggle" readOnly checked={isDrawerOpen} />
             <div className="drawer-side">
                 <div aria-label="close sidebar" className="drawer-overlay" onClick={() => setIsDrawerOpen(false)} />
                 <ul className="menu bg-base-200 text-base-content min-h-full w-full md:w-2/3 lg:w-1/2 p-4">

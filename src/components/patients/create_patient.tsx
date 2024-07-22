@@ -1,5 +1,5 @@
 "use client";
-import { FormEvent, ReactNode, useReducer, useRef, useState } from "react"
+import { type FormEvent, type ReactNode, useReducer, useRef, useState } from "react"
 import { UserPlus, Ban, Check } from 'lucide-react';
 import { registerPatient } from "~/data/patients/register";
 import { useAuth } from "~/context/auth";
@@ -168,7 +168,7 @@ export default function CreatePatient() {
                                     type="checkbox"
                                     className="toggle toggle-primary"
                                     checked={formState.mechanical_ventilation}
-                                    onChange={e => setFormState({ mechanical_ventilation: !formState.mechanical_ventilation })}
+                                    onChange={_ => setFormState({ mechanical_ventilation: !formState.mechanical_ventilation })}
                                 />
                             </label>
                         </div>
@@ -179,7 +179,7 @@ export default function CreatePatient() {
                                     type="checkbox"
                                     className="toggle toggle-primary"
                                     checked={formState.exitus_letalis}
-                                    onChange={e => setFormState({ exitus_letalis: !formState.exitus_letalis })}
+                                    onChange={_ => setFormState({ exitus_letalis: !formState.exitus_letalis })}
                                 />
                             </label>
                         </div>
@@ -190,7 +190,7 @@ export default function CreatePatient() {
                                     type="checkbox"
                                     className="toggle toggle-primary"
                                     checked={formState.discharged}
-                                    onChange={e => setFormState({ discharged: !formState.discharged })}
+                                    onChange={_ => setFormState({ discharged: !formState.discharged })}
                                 />
                             </label>
                         </div>

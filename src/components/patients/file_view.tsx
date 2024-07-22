@@ -10,8 +10,9 @@ export default function FileView({ file_id }: { file_id: number }) {
     const [status, setStatus] = useState<Status>("pending");
 
     useEffect(() => {
-        async function fetchFile() {
-            setStatus("pending");
+        setStatus("pending");
+
+        async function fetchDocument() {
             try {
                 const res = await get_document_by_id(file_id);
 
@@ -34,7 +35,7 @@ export default function FileView({ file_id }: { file_id: number }) {
             }
         }
 
-        fetchFile();
+        fetchDocument();
 
         return () => {
             URL.revokeObjectURL(blobURL);

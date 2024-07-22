@@ -1,8 +1,8 @@
 "use client";
 import { User, KeyRound, Ban, Check } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useReducer, useState } from "react";
-import { UserRole } from "~/context/auth";
+import { type FormEvent, useReducer, useState } from "react";
+import type { UserRole } from "~/context/auth";
 import { registerUser } from "~/data/users/register";
 
 type RegisterForm = {

@@ -1,6 +1,6 @@
-import { FormEvent, ReactNode, useReducer, useRef, useState } from "react"
-import { Ban, Check, NotepadText } from 'lucide-react';
-import { User } from "~/context/auth";
+"use client";
+import { type FormEvent, type ReactNode, useReducer, useRef, useState } from "react"
+import { Ban, Check } from 'lucide-react';
 import { create_followup_note } from "~/data/followup_notes/create_followup_note";
 import { useRouter } from "next/navigation";
 import ApacheScore from "./apache_score_form";
@@ -92,14 +92,14 @@ const button_states: Record<CreateStates, ReactNode> = {
     </button>
 }
 
-export default function CreateFollowupNote({ user, patient_id }: { user: User, patient_id: number }) {
+export default function CreateFollowupNote({ token, patient_id }: { token: string, patient_id: number }) {
     const modalRef = useRef<HTMLDialogElement>(null);
     const router = useRouter()
     const [formState, setFormState] = useReducer(followup_reducer, {
         ...create_followup_note_form,
-        creator_token: user.token,
+        creator_token: token,
     });
-    const [apacheFormState, setApacheFormState] = useReducer(apache_reducer, {...apache_score_form});
+    const [apacheFormState, setApacheFormState] = useReducer(apache_reducer, { ...apache_score_form });
 
     const [createState, setCreateState] = useState<CreateStates>("idle");
 
@@ -107,9 +107,9 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
         e.preventDefault();
         setCreateState("loading");
 
-        // @ts-ignore
+        // @ts-expect-error
         const create_followup_note_req = await create_followup_note({
-            user_token: user.token,
+            user_token: token,
             patient_id: patient_id,
             description: formState.description,
             title: formState.title,
@@ -127,66 +127,51 @@ export default function CreateFollowupNote({ user, patient_id }: { user: User, p
         }
     }
 
-    function handleModalOpen() {
-        modalRef.current?.showModal()
-    }
+    return <div>
+        <h3 className="text-xl font-semibold text-primary mb-4">Crear nota de seguimiento</h3>
+        <form
+            method="post"
+            className="mt-4 flex flex-col mb-4 gap-5"
+            onSubmit={e => submitForm(e)}
+        >
+            <label className="input input-bordered flex items-center gap-2">
+                Título
+                <input
+                    type="text"
+                    className="grow"
+                    placeholder="título de la nota"
+                    value={formState.title}
+                    onChange={e => setFormState({ title: e.currentTarget.value })}
+                    required
+                />
+            </label>
+            <textarea
+                className="textarea textarea-bordered"
+                placeholder="Descripción"
+                value={formState.description}
+                onChange={e => setFormState({ description: e.currentTarget.value })}
+                required
+            />
 
-    return <>
-        <button className="btn" onClick={handleModalOpen}>
-            <NotepadText />
-            Crear nota
-        </button>
-        <dialog ref={modalRef} className="modal">
-            <div className="modal-box">
-                <form method="dialog">
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                </form>
-                <h3 className="font-bold text-lg">Crear nota de seguimiento</h3>
-                <form
-                    method="post"
-                    className="mt-4 flex flex-col mb-4 gap-5"
-                    onSubmit={e => submitForm(e)}
-                >
-                    <label className="input input-bordered flex items-center gap-2">
-                        Título
-                        <input
-                            type="text"
-                            className="grow"
-                            placeholder="título de la nota"
-                            value={formState.title}
-                            onChange={e => setFormState({ title: e.currentTarget.value })}
-                            required
-                        />
-                    </label>
-                    <textarea
-                        className="textarea textarea-bordered"
-                        placeholder="Descripción"
-                        value={formState.description}
-                        onChange={e => setFormState({ description: e.currentTarget.value })}
-                        required
-                    />
+            <label className="label cursor-pointer">
+                <span className="label-text">Apache score</span>
+                <input
+                    type="checkbox"
+                    className="toggle"
+                    checked={formState.apache_score}
+                    onChange={() => setFormState({ apache_score: !formState.apache_score })}
+                />
+            </label>
 
-                    <label className="label cursor-pointer">
-                        <span className="label-text">Apache score</span>
-                        <input
-                            type="checkbox"
-                            className="toggle"
-                            checked={formState.apache_score}
-                            onChange={() => setFormState({ apache_score: !formState.apache_score })}
-                        />
-                    </label>
+            {
+                formState.apache_score &&
+                <ApacheScore
+                    formState={apacheFormState}
+                    setFormState={setApacheFormState}
+                />
+            }
 
-                    {
-                        formState.apache_score &&
-                        <ApacheScore
-                            formState={apacheFormState}
-                            setFormState={setApacheFormState}
-                        />
-                    }
-
-                    {button_states[createState]}
-                </form>
-            </div>
-        </dialog>
-    </>
+            {button_states[createState]}
+        </form>
+    </div>
 }

@@ -26,9 +26,6 @@ dependencies:
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
-  jwt-client:
-    specifier: ^0.2.1
-    version: 0.2.1
   lucide-react:
     specifier: ^0.396.0
     version: 0.396.0(react@18.3.1)
@@ -3176,10 +3173,6 @@ packages:
     dependencies:
       jwa: 1.4.1
       safe-buffer: 5.2.1
-    dev: false
-
-  /jwt-client@0.2.1:
-    resolution: {integrity: sha512-TGNCdhPtr+GQWX1IweESBN8P/5kobiOC9Q07UntpZ90JwSeLaqtT0vgblTkxZfMa8U5vLxmpNyjRq9I6ZHzxOw==}
     dev: false
 
   /keyv@4.5.4:

@@ -3,10 +3,12 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { cookies } from 'next/headers';
 
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
+import { User } from "~/types";
 
 const login_schema = z.object({
     email: z.string().email(),
@@ -17,7 +19,7 @@ type LoginSchema = z.infer<typeof login_schema>;
 
 type SuccessfulLogin = {
     success: true,
-    token: string
+    user: User,
 }
 
 type UnsuccesfulLogin = {
@@ -50,14 +52,29 @@ export async function loginUser(login_creds: LoginSchema): Promise<SuccessfulLog
             msg: "Usuario o contraseña incorrectos"
         };
 
+    const token = jwt.sign({
+        email: db_user.email,
+        names: db_user.names,
+        last_names: db_user.last_names,
+        role: db_user.role,
+        phone: db_user.phone
+    }, env.JWT_SECRET);
+
+    cookies().set('token', token);
+
     return {
         success: true,
-        token: jwt.sign({
+        user: {
+            token,
             email: db_user.email,
             names: db_user.names,
             last_names: db_user.last_names,
             role: db_user.role,
             phone: db_user.phone
-        }, env.JWT_SECRET)
+        }
     };
+}
+
+export async function logout() {
+    cookies().delete('token');
 }

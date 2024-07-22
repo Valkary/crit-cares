@@ -1,6 +1,6 @@
 "use client";
 
-import { ToastStatus, ToastType } from "~/context/toast";
+import { ToastStatus, ToastType, useToastContext } from "~/context/toast";
 import { InfoIcon, BanIcon, CheckIcon, TriangleAlertIcon } from "lucide-react";
 import { ReactNode, useEffect } from "react";
 
@@ -32,9 +32,24 @@ export default function Toast({ type, message, duration, id, deleteToast }: Prop
     return <div className={`alert ${alert_types[type]} min-w-[300px] grid grid-cols-[1fr 4fr] grid-rows-2 justify-center align-middle gap-0`}>
         <button
             onClick={() => deleteToast(id)}
-            className="btn btn-ghost btn-circle col-start-1 uppercase font-bold"
+            className="btn btn-ghost btn-sm btn-circle col-start-1 uppercase font-bold p-0"
         >{icons[type]}</button>
-        <span className="col-start-2 uppercase font-bold grow">{type}</span>
-        <span className="col-start-2">{message}</span>
+        <span className="col-start-2 uppercase font-bold  p-0">{type}</span>
+        <span className="col-start-2 p-0">{message}</span>
+    </div>
+}
+
+export function Toasts() {
+    const { toasts, deleteToast } = useToastContext();
+    
+    return <div className="toast z-50">
+        {toasts.map(t => <Toast
+            key={t.id}
+            type={t.type}
+            message={t.message}
+            id={t.id}
+            deleteToast={deleteToast}
+            duration={t.duration}
+        />)}
     </div>
 }

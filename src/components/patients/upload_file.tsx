@@ -1,14 +1,15 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 import { upload_file } from "~/data/files";
-import { User, file_schema } from "~/types";
+import { file_schema } from "~/types";
 
 type Props = {
-    user: User,
+    token: string,
     patient_id: number
 };
 
-export default function UploadFile({ user, patient_id }: Props) {
+export default function UploadFile({ token, patient_id }: Props) {
     const router = useRouter();
     const [fileError, setFileError] = useState({
         error: false,
@@ -19,18 +20,11 @@ export default function UploadFile({ user, patient_id }: Props) {
         e.preventDefault();
         const form_data = new FormData(e.currentTarget);
         const res = await upload_file(form_data);
-
-        for (const x of form_data) {
-            console.log(x);
-        }
-        console.log(res);
-
         router.refresh();
     }
 
     function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
         const file_list = e.currentTarget.files ?? [];
-
         const parsed_file = file_schema.safeParse(file_list[0]);
 
         if (parsed_file.success)
@@ -41,7 +35,7 @@ export default function UploadFile({ user, patient_id }: Props) {
 
     return <form onSubmit={(e) => onSubmit(e)}>
         <fieldset>
-            <input type="hidden" name="user_token" value={user.token} />
+            <input type="hidden" name="user_token" value={token} />
             <input type="hidden" name="patient_id" value={patient_id} />
             <div className="join w-full">
                 <label className="form-control w-full max-w-xs">

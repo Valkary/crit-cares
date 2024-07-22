@@ -1,5 +1,5 @@
 "use server";
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import Navbar from "~/components/ui/navbar";
 
 export default async function Layout({ children }: { children: ReactNode }) {

@@ -39,14 +39,24 @@ export default async function DetailFollowupNote({ note_id }: { note_id: number 
     if (!patient_note) return <>Error fetching note</>
 
     return <div className="flex flex-col gap-2 w-full">
-        <span>{patient_note.note_title}</span>
-        <span>{patient_note.note_date?.toLocaleDateString()}</span>
-        <span>{patient_note.note_description}</span>
-        <span>Patient Name {patient_note.patient_name}</span>
+        <div className="w-full flex justify-start gap-2">
+            <span className="font-bold uppercase">Paciente: </span>
+            <span>{patient_note.patient_name}</span>
+        </div>
+        <div className="w-full flex justify-start gap-2">
+            <span className="font-bold uppercase">Título nota: </span>
+            <span>{patient_note.note_title}</span>
+        </div>
+        <div className="w-full flex justify-start gap-2">
+            <span className="font-bold uppercase">Fecha: </span>
+            <span>{patient_note.note_date?.toLocaleDateString()}</span>
+        </div>
+        <span className="font-bold uppercase">Descripción: </span>
+        <span className="w-full text-justify p-4 bg-slate-200">{patient_note.note_description}</span>
 
         {
             patient_note.apache_score && <>
-                <h3 className="font-bold text-lg">Apache Score: {
+                <h3 className="text-xl font-semibold text-primary mb-4">Apache Score: {
                     `${get_survival_percentage(calculate_apache_score(patient_note.apache_score))}%`
                 }</h3>
 

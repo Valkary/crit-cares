@@ -1,6 +1,6 @@
 "use client";
-import { createContext, ReactNode, useCallback, useContext, useState } from "react";
-import Toast from "~/components/ui/toast";
+import { usePathname, useSearchParams } from "next/navigation";
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 
 export type ToastStatus = "warning" | "error" | "info" | "success";
 
@@ -12,16 +12,20 @@ export type ToastType = {
 }
 
 type ToastContextType = {
-    toats: ToastType[]
-    addToast: (type: ToastStatus, message?: string, duration?: number) => void;
+    toasts: ToastType[],
+    addToast: (type: ToastStatus, message?: string, duration?: number) => void,
+    deleteToast: (id: number) => void,
 }
 
 const ToastContext = createContext<ToastContextType>({
-    toats: [],
-    addToast: () => { }
+    toasts: [],
+    addToast: () => { },
+    deleteToast: () => { }
 });
 
 export default function ToastContextProvider({ children }: { children: ReactNode }) {
+    const path = usePathname();
+    const params = useSearchParams();
     const [toasts, setToasts] = useState<ToastType[]>([]);
 
     const deleteToast = useCallback((id: number) => {
@@ -39,21 +43,20 @@ export default function ToastContextProvider({ children }: { children: ReactNode
         setToasts(t => [...t, toast]);
     }
 
+    useEffect(() => {
+        const status = params.get('toast') as ToastStatus;
+
+        if (status) {
+            addToast(status, params.get('msg') ?? '');
+        }
+    }, [path]);
+
     return <ToastContext.Provider value={{
-        toats: toasts,
-        addToast
+        toasts: toasts,
+        addToast,
+        deleteToast
     }}>
         {children}
-        <div className="toast z-50">
-            {toasts.map(t => <Toast
-                key={t.id}
-                type={t.type}
-                message={t.message}
-                id={t.id}
-                deleteToast={deleteToast}
-                duration={t.duration}
-            />)}
-        </div>
     </ToastContext.Provider>
 }
 

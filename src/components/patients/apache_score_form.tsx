@@ -1,5 +1,5 @@
-import { Dispatch } from "react";
-import { ApacheScoreForm } from "./create_followup_note";
+import type { Dispatch } from "react";
+import type { ApacheScoreForm } from "./create_followup_note";
 
 type Props = {
     formState: ApacheScoreForm,

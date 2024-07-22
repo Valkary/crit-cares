@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import { PatientModel } from "~/data/patients/get_patients";
 

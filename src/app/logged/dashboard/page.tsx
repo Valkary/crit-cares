@@ -10,8 +10,8 @@ export default async function Dashboard() {
 
         <div className="max-w-7xl">
             <PatientTable ServerComponent={[
-                <FollowupNoteHistory patient_id={-1} />,
-                <PatientFiles patient_id={-1} />
+                <FollowupNoteHistory patient_id={-1} key={0} />,
+                <PatientFiles patient_id={-1} key={1} />
             ]} />
         </div>
     </section>

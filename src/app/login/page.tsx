@@ -1,7 +1,7 @@
 "use client";
-import { User, KeyRound, Ban } from "lucide-react";
+import { User, KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { FormEvent, useContext, useState } from "react";
+import { type FormEvent, useContext, useState } from "react";
 import { AuthContext } from "~/context/auth";
 import { loginUser } from "~/data/users/login";
 
@@ -21,8 +21,8 @@ export default function Login({}) {
     if (!login.success)
       return console.log("Error");
 
-    loginContextUser(login.token);
-    router.push("/logged/dashboard");
+    loginContextUser(login.user);
+    router.push("/logged");
   }
 
   return (
