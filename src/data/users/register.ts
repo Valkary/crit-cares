@@ -1,21 +1,10 @@
 "use server";
 import bcrypt from "bcrypt";
-import { z } from "zod";
 import { eq } from "drizzle-orm";
 
 import { db } from "~/server/db";
 import { users } from "~/server/db/schema";
-
-const register_schema = z.object({
-    email: z.string().email(),
-    names: z.string(),
-    last_names: z.string(),
-    password: z.string(),
-    role: z.enum(['admin', 'doctor', 'secretary', 'readonly']),
-    phone: z.string().length(10)
-});
-
-type RegisterSchema = z.infer<typeof register_schema>;
+import { register_schema, RegisterSchema } from "../schemas";
 
 export async function registerUser(data: RegisterSchema) {
     const res = register_schema.safeParse(data);

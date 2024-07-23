@@ -9,26 +9,31 @@ import {
 import AuthContextProvider from "~/context/auth";
 import ModalContextProvider from "~/context/modal";
 import DrawerContextProvider from "~/context/drawer";
-import ToastContextProvider from "./toast";
 import Modal from "~/components/ui/modal";
 import Drawer from "~/components/ui/drawer";
-import { Toasts } from "~/components/ui/toast";
+import { ThemeProvider } from "./theme";
+import { Toaster } from "~/components/ui/toaster";
 
 const queryClient = new QueryClient();
 
 export default function AppContextProvider({ children }: { children: ReactNode }) {
     return <QueryClientProvider client={queryClient}>
-        <AuthContextProvider>
-            <ModalContextProvider>
-                <DrawerContextProvider>
-                    <ToastContextProvider>
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+        >
+            <AuthContextProvider>
+                <ModalContextProvider>
+                    <DrawerContextProvider>
                         <Modal />
                         <Drawer />
-                        <Toasts />
                         {children}
-                    </ToastContextProvider>
-                </DrawerContextProvider>
-            </ModalContextProvider>
-        </AuthContextProvider>
-    </QueryClientProvider> 
+                        <Toaster />
+                    </DrawerContextProvider>
+                </ModalContextProvider>
+            </AuthContextProvider>
+        </ThemeProvider>
+    </QueryClientProvider>
 }
