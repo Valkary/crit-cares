@@ -2,6 +2,7 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import AppContextProvider from "~/context/provider";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Create T3 App",
@@ -16,11 +17,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
-        <AppContextProvider>
-          {children}
-        </AppContextProvider>
-      </body>
+      <Suspense>
+        <body>
+          <AppContextProvider>
+            {children}
+          </AppContextProvider>
+        </body>
+      </Suspense>
     </html>
   );
 }

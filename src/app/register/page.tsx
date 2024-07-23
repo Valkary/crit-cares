@@ -34,7 +34,7 @@ function reducer(state: RegisterForm, action: RegisterFormAction): RegisterForm 
     };
 }
 
-export default function Register() {
+export default function Page() {
     const router = useRouter();
     const [formState, setFormState] = useReducer(reducer, form);
     const [alert, setAlert] = useState({

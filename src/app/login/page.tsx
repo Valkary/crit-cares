@@ -5,7 +5,7 @@ import { type FormEvent, useContext, useState } from "react";
 import { AuthContext } from "~/context/auth";
 import { loginUser } from "~/data/users/login";
 
-export default function Login({}) {
+export default function Page() {
   const { loginUser: loginContextUser } = useContext(AuthContext);
   const router = useRouter();
   const [email, setEmail] = useState("");
