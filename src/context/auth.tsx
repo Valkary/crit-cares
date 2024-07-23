@@ -35,6 +35,8 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
 
     // Get user credentials from local storage if they exist
     useEffect(() => {
+        if (path === "/register") return;
+
         if (!checkUserCreds())
             router.push("/login?toast=error&msg=Usuario no definido");
     }, [path]);
