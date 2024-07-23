@@ -39,7 +39,7 @@ const schemaWithApacheScore = z.object({
 });
 
 const create_followup_note_schema = z.union([schemaWithoutApacheScore, schemaWithApacheScore]);
-type CreateFollowupNoteSchema = z.infer<typeof create_followup_note_schema>;
+export type CreateFollowupNoteSchema = z.infer<typeof create_followup_note_schema>;
 
 export async function create_followup_note(note: CreateFollowupNoteSchema): Promise<CreationResult> {
     const res = create_followup_note_schema.safeParse(note);

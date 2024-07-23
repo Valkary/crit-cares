@@ -23,8 +23,6 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     const path = usePathname();
     const [user, setUser] = useState<User | null>(null);
 
-    console.log(user);
-
     function checkUserCreds() {
         if (user !== null)
             return true;

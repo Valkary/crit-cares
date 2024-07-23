@@ -36,14 +36,23 @@ export default function Modal() {
   </dialog>
 }
 
-export function ModalButton({ children, modalContent }: { children: ReactNode, modalContent: ReactNode }) {
+type ModalButtonProps = {
+  modalContent: ReactNode,
+  children: ReactNode,
+};
+
+export function ModalButton({ children, modalContent }: ModalButtonProps) {
   const { showModal } = useModalContext();
 
-  return <button className="btn" onClick={() => showModal({
-    body: modalContent,
-    size: "md",
-    title: ""
-  })}>
+  function openModalWithContent() {
+    showModal({
+      body: modalContent,
+      size: "md",
+      title: ""
+    });
+  }
+
+  return <button className="btn" onClick={openModalWithContent}>
     {children}
   </button>
 }

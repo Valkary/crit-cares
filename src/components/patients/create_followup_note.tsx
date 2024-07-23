@@ -1,7 +1,7 @@
 "use client";
 import { type FormEvent, type ReactNode, useReducer, useRef, useState } from "react"
 import { Ban, Check } from 'lucide-react';
-import { create_followup_note } from "~/data/followup_notes/create_followup_note";
+import { create_followup_note, CreateFollowupNoteSchema } from "~/data/followup_notes/create_followup_note";
 import { useRouter } from "next/navigation";
 import ApacheScore from "./apache_score_form";
 
@@ -106,8 +106,7 @@ export default function CreateFollowupNote({ token, patient_id }: { token: strin
     async function submitForm(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setCreateState("loading");
-
-        // @ts-expect-error
+        
         const create_followup_note_req = await create_followup_note({
             user_token: token,
             patient_id: patient_id,
@@ -115,7 +114,7 @@ export default function CreateFollowupNote({ token, patient_id }: { token: strin
             title: formState.title,
             apache_score: formState.apache_score,
             apache_score_obj: formState.apache_score ? apacheFormState : null
-        });
+        } as CreateFollowupNoteSchema);
 
         if (create_followup_note_req.success) {
             setCreateState("idle");
