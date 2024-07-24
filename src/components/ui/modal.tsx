@@ -4,16 +4,16 @@ import { ModalSizes, useModalContext } from "~/context/modal";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
+import { Button } from "./button";
+import { Loader2Icon } from "lucide-react";
 
 const sizes: Record<ModalSizes, string> = {
   "sm": "",
   "md": "",
-  "lg": "md:max-w-7xl md:max-h-full h-[90%]"
+  "lg": "md:max-w-7xl h-[90%]"
 };
 
 export default function Modal() {
@@ -26,16 +26,14 @@ export default function Modal() {
       modalRef.current?.close()
   }, [isOpen]);
 
-  return <Dialog>
-    <DialogTrigger>Open</DialogTrigger>
-    <DialogContent>
+  return <Dialog open={isOpen} onOpenChange={hideModal} modal>
+    <DialogContent className={`max-h-[90%] overflow-y-scroll flex flex-col ${sizes[content.size]}`}>
       <DialogHeader>
-        <DialogTitle>Are you absolutely sure?</DialogTitle>
-        <DialogDescription>
-          This action cannot be undone. This will permanently delete your account
-          and remove your data from our servers.
-        </DialogDescription>
+        <DialogTitle className="text-2xl font-semibold text-primary">{content.title}</DialogTitle>
       </DialogHeader>
+      <Suspense fallback={<Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}>
+        {content.body}
+      </Suspense>
     </DialogContent>
   </Dialog>
 
@@ -57,7 +55,7 @@ export function ModalButton({ children, modalContent }: ModalButtonProps) {
     });
   }
 
-  return <button className="btn" onClick={openModalWithContent}>
+  return <Button className="w-full" variant={"secondary"} size={"lg"} onClick={openModalWithContent}>
     {children}
-  </button>
+  </Button>
 }

@@ -1,63 +1,80 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, FormEvent, useState } from "react";
-import { upload_file } from "~/data/files";
+import { Input } from "../ui/input";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "../ui/button";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "../ui/form";
 import { file_schema } from "~/types";
+import { upload_file } from "~/data/files";
 
 type Props = {
     token: string,
     patient_id: number
 };
 
+const upload_file_schema = z.object({
+    user_token: z.string(),
+    patient_id: z.number().int(),
+    file_name: z.string({ message: "Ingresa un nombre de archivo" }).min(3, { message: "Mínimo 3 caracteres" }),
+})
+    .merge(z.object({ file: file_schema }));
+
+type UploadFileSchema = z.infer<typeof upload_file_schema>
+
 export default function UploadFile({ token, patient_id }: Props) {
     const router = useRouter();
-    const [fileError, setFileError] = useState({
-        error: false,
-        message: ""
-    });
+    const form = useForm<UploadFileSchema>({
+        resolver: zodResolver(upload_file_schema),
+        defaultValues: {
+            user_token: token,
+            patient_id
+        }
+    })
 
-    async function onSubmit(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        const form_data = new FormData(e.currentTarget);
+    async function onSubmit(values: UploadFileSchema) {
+        console.log(values);
+        const form_data = new FormData();
+
+        Object.keys(values).map(key => form_data.append(key, values[key]));
+
         const res = await upload_file(form_data);
         router.refresh();
     }
 
-    function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
-        const file_list = e.currentTarget.files ?? [];
-        const parsed_file = file_schema.safeParse(file_list[0]);
-
-        if (parsed_file.success)
-            return setFileError({ error: false, message: "" });
-
-        return setFileError({ error: true, message: parsed_file.error.issues[0]?.message ?? "" })
-    }
-
-    return <form onSubmit={(e) => onSubmit(e)}>
-        <fieldset>
-            <input type="hidden" name="user_token" value={token} />
-            <input type="hidden" name="patient_id" value={patient_id} />
-            <div className="join w-full">
-                <label className="form-control w-full max-w-xs">
-                    <label className="input input-bordered flex items-center gap-2">
-                        Nombre
-                        <input type="text" className="grow" name="file_name" placeholder="archivo" required />
-                    </label>
-                </label>
-                <label className="form-control w-full max-w-xs">
-                    <input
-                        name="file"
-                        type="file"
-                        className="file-input file-input-bordered w-full max-w-xs"
-                        onChange={e => handleFileChange(e)}
-                        required
-                    />
-                    <div className="label w-full flex justify-end">
-                        {fileError.error && <span className="label-text-alt text-red-500">{fileError.message}</span>}
-                    </div>
-                </label>
-            </div>
-        </fieldset>
-        <button className="btn" disabled={fileError.error}>Subir archivo</button>
-    </form>
+    return <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-2">
+            <FormField
+                control={form.control}
+                name="file_name"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Correo eletrónico</FormLabel>
+                        <FormControl>
+                            <Input type="text" placeholder="Nombre a guardar" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                    </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="file"
+                render={({ field }) => {
+                    console.log(field)
+                    return (
+                        <FormItem>
+                            <FormLabel>Archivo a subir</FormLabel>
+                            <FormControl>
+                                <Input type="file" onChange={(e) => form.setValue("file", e.currentTarget.files[0])} />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                    )
+                }}
+            />
+            <Button className="w-full" size={"lg"} type="submit">Subir archivo</Button>
+        </form>
+    </Form>
 }

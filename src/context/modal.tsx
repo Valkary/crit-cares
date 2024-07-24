@@ -21,7 +21,6 @@ type ModalFunctions = {
     toggleModal: () => void
 }
 
-
 type ModalContextType = ModalValues & ModalFunctions;
 
 const initial_modal_context: ModalContextType = {

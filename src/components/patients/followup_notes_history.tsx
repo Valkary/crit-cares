@@ -21,7 +21,7 @@ export default async function FollowupNoteHistory({ patient_id }: { patient_id: 
                     return <TableRow key={note.id}>
                         <TableCell>{note.creation_date?.toDateString()}</TableCell>
                         <TableCell>{note.title}</TableCell>
-                        <TableCell><DetailFollowupNote patient_id={patient_id} note={note} /></TableCell>
+                        <TableCell ><DetailFollowupNote patient_id={patient_id} note={note} /></TableCell>
                     </TableRow>
                 })
             }
