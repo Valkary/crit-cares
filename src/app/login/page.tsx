@@ -1,80 +1,104 @@
 "use client";
-import { User, KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type FormEvent, useContext, useState } from "react";
-import { AuthContext } from "~/context/auth";
+import { useAuth } from "~/context/auth";
 import { loginUser } from "~/data/users/login";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "~/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { Input } from "~/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { useToast } from "~/components/ui/use-toast";
+
+const login_schema = z.object({
+  email: z.string({ message: "Requerido" }).email({ message: "Ingrese un email válido" }),
+  password: z.string({ message: "Requerido" }).min(5, { message: "Contraseña muy corta" })
+})
+
+type FormLoginSchema = z.infer<typeof login_schema>;
 
 export default function Page() {
-  const { loginUser: loginContextUser } = useContext(AuthContext);
+  const { loginUser: loginContextUser } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { toast } = useToast()
 
-  async function handleLogin(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const login = await loginUser({
-      email,
-      password
-    });
+  const form = useForm<FormLoginSchema>({
+    resolver: zodResolver(login_schema)
+  });
 
-    if (!login.success)
-      return console.log("Error");
+  async function handleLogin(values: FormLoginSchema) {
+    const login = await loginUser(values);
 
+    if (!login.success) {
+      toast({
+        variant: "destructive",
+        title: "Error de inicio de sesión!",
+        description: login.msg
+      });
+      return;
+    }
+      
     loginContextUser(login.user);
     router.push("/logged");
   }
 
   return (
-    <main>
-      <div className="dark min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-primary text-center">Login</h2>
-          <p className="mt-2 text-center text-gray-400">Bienvenid@ a Crit Cares</p>
-          <form
-            method="post"
-            className="mt-4 flex flex-col mb-4 gap-5"
-            onSubmit={e => handleLogin(e)}
-          >
-            <label className="input input-bordered flex items-center gap-2">
-              Email
-              <input
-                type="email"
+    <main className="min-h-screen flex items-center justify-center">
+      <Card className="w-full max-w-sm sm:max-w-2xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-semibold text-primary text-center">Registrar</CardTitle>
+          <CardDescription>
+            Bienvenid@ a Crit Care
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleLogin)} className="grid gap-2">
+              <FormField
+                control={form.control}
                 name="email"
-                className="grow"
-                placeholder="correo electrónico"
-                onChange={e => setEmail(e.currentTarget.value)}
-                value={email}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Correo eletrónico</FormLabel>
+                    <FormControl>
+                      <Input type="text" placeholder="ejemplo@gmail.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <User />
-            </label>
-            <label className="input input-bordered flex items-center gap-2">
-              Contraseña
-              <input
-                type="password"
+              <FormField
+                control={form.control}
                 name="password"
-                className="grow"
-                placeholder="contraseña"
-                onChange={e => setPassword(e.currentTarget.value)}
-                value={password}
-                required
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contraseña</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="contraseña" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              <KeyRound />
-            </label>
-            <button
-              type="submit"
-              className="btn btn-primary w-full py-2 px-4 rounded-md"
-              // disabled={loginQuery.isLoading}
-            >
-              {false ?
-                <span className="loading loading-dots loading-lg"></span> :
-                <span>Iniciar sesión</span>
-              }
-            </button>
-          </form>
-        </div>
-      </div>
+              <Button className="w-full" type="submit">Iniciar sesión</Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </main>
   );
 }

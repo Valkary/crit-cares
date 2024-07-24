@@ -1,13 +1,8 @@
 "use client";
-import { User, KeyRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-import { useToastContext } from "~/context/toast";
-import { register_schema } from "~/data/schemas";
-import { registerUser } from "~/data/users/register";
 import { Button } from "~/components/ui/button";
 import {
     Form,
@@ -27,6 +22,9 @@ import {
 } from "~/components/ui/card";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "~/components/ui/select";
 import { useToast } from "~/components/ui/use-toast";
+
+import { register_schema } from "~/data/schemas";
+import { registerUser } from "~/data/users/register";
 
 const form_register_schema = register_schema
     .merge(z.object({ confirm_password: z.string({ message: "Requerido" }) }))

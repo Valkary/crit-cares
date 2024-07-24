@@ -1,26 +1,47 @@
 "use client";
 
 import { X } from "lucide-react";
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import { useDrawerContext } from "~/context/drawer";
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
 
-export default function Drawer() {
-    const { isOpen, content, closeDrawer } = useDrawerContext();
+type Props = {
+    title?: string,
+    trigger?: string | ReactNode,
+    description?: string,
+    children: ReactNode
+}
 
-    return <div className="drawer drawer-end z-20">
-        <input type="checkbox" className="drawer-toggle" readOnly checked={isOpen} />
-        <div className="drawer-side">
-            <div aria-label="close sidebar" className="drawer-overlay" onClick={closeDrawer} />
-            <div className="menu bg-base-200 text-base-content min-h-full w-full md:w-2/3 lg:w-1/2 p-4">
-                <div className="w-full flex justify-end">
-                    <button className="btn btn-ghost btn-circle flex md:hidden" onClick={closeDrawer}>
-                        <X />
-                    </button>
-                </div>
-                <Suspense fallback={<span className="loading loading-spinner loading-lg"></span>}>
-                    {content}
-                </Suspense>
+export default function Drawer({ children, description, title, trigger }: Props) {
+    return <Sheet>
+        <SheetTrigger>
+            {trigger ? trigger : "Abrir"}
+        </SheetTrigger>
+        <SheetContent className="w-screen min-w-full md:min-w-[50%] lg:min-w-[33.3%] overflow-y-scroll">
+            <div className="w-full p-6 flex flex-col gap-2">
+                <SheetHeader>
+                    <SheetTitle>
+                        <h2 className="text-2xl font-semibold text-primary text-center mb-4">{title}</h2>
+                    </SheetTitle>
+                    <SheetDescription>{description}</SheetDescription>
+
+                    <Suspense>
+                        {children}
+                    </Suspense>
+                </SheetHeader>
             </div>
-        </div>
-    </div>
+        </SheetContent>
+    </Sheet>
 }

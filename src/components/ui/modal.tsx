@@ -1,6 +1,14 @@
 "use client";
 import { ReactNode, Suspense, useEffect, useRef } from "react"
 import { ModalSizes, useModalContext } from "~/context/modal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 const sizes: Record<ModalSizes, string> = {
   "sm": "",
@@ -18,22 +26,19 @@ export default function Modal() {
       modalRef.current?.close()
   }, [isOpen]);
 
-  return <dialog className="modal modal-bottom sm:modal-middle" ref={modalRef}>
-    <div className={`modal-box py-10 flex flex-col ${sizes[content.size]}`}>
-      {
-        content.title &&
-        <h3 className="text-xl font-semibold text-primary mb-4">{content.title}</h3>
-      }
-      <div className="w-full max-h-full flex-grow flex flex-col">
-        <Suspense fallback={<span className="loading loading-spinner loading-lg"></span>}>
-          {content.body}
-        </Suspense>
-      </div>
-    </div>
-    <form method="dialog" className="modal-backdrop">
-      <button onClick={hideModal}>close</button>
-    </form>
-  </dialog>
+  return <Dialog>
+    <DialogTrigger>Open</DialogTrigger>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Are you absolutely sure?</DialogTitle>
+        <DialogDescription>
+          This action cannot be undone. This will permanently delete your account
+          and remove your data from our servers.
+        </DialogDescription>
+      </DialogHeader>
+    </DialogContent>
+  </Dialog>
+
 }
 
 type ModalButtonProps = {

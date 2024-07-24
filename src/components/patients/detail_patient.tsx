@@ -3,7 +3,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from "next/navigation";
 import { NotepadText } from 'lucide-react';
-import { Suspense } from 'react';
 
 import FollowupNoteHistory from './followup_notes_history';
 import EditPatient from "./edit_patient_form";
@@ -27,12 +26,10 @@ export default async function DetailPatient({ patient_data }: Props) {
         return redirect("/login?toast=error&msg=Usuario no definido");
 
     return (
-        <div className="w-full bg-white rounded-lg shadow-md p-6 flex flex-col gap-2">
-            <h2 className="text-2xl font-semibold text-primary text-center mb-4">Perfil de Paciente</h2>
+        <div className="w-full flex flex-col gap-2">
             <EditPatient patient_data={patient_data} />
 
             <h3 className="text-xl font-semibold text-primary mb-4">Notas de seguimiento</h3>
-
 
             <Tabs tabs={{
                 notes: {

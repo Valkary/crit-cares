@@ -7,10 +7,6 @@ import {
 } from '@tanstack/react-query'
 
 import AuthContextProvider from "~/context/auth";
-import ModalContextProvider from "~/context/modal";
-import DrawerContextProvider from "~/context/drawer";
-import Modal from "~/components/ui/modal";
-import Drawer from "~/components/ui/drawer";
 import { ThemeProvider } from "./theme";
 import { Toaster } from "~/components/ui/toaster";
 
@@ -25,14 +21,8 @@ export default function AppContextProvider({ children }: { children: ReactNode }
             disableTransitionOnChange
         >
             <AuthContextProvider>
-                <ModalContextProvider>
-                    <DrawerContextProvider>
-                        <Modal />
-                        <Drawer />
-                        {children}
-                        <Toaster />
-                    </DrawerContextProvider>
-                </ModalContextProvider>
+                {children}
+                <Toaster />
             </AuthContextProvider>
         </ThemeProvider>
     </QueryClientProvider>
