@@ -4,14 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build",
+    "build": "drizzle-kit push && next build",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "drizzle-kit push && next start"
+    "start": "next start"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
