@@ -1,7 +1,7 @@
 "use client";
 
 import { InferSelectModel } from "drizzle-orm";
-import { FolderSearch } from "lucide-react";
+import { FolderSearch, LoaderCircleIcon, XIcon } from "lucide-react";
 import { useModalContext } from "~/context/modal";
 import { patient_documents } from "~/server/db/schema";
 import FileView from "./file_view";
@@ -46,8 +46,12 @@ export default function ViewFileButton({ file }: Props) {
     }
 
     return (
-        <button className="btn btn-ghost" onClick={openModal} disabled={status === "pending"}>
-            <FolderSearch />
+        <button className="btn btn-ghost" onClick={openModal} disabled={status !== "success"}>
+            {
+                status === "pending" ? <LoaderCircleIcon className="animate-spin" /> :
+                    status === "error" ? <XIcon color="red" /> :
+                        <FolderSearch />
+            }
         </button>
     );
 }

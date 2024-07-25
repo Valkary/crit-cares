@@ -38,7 +38,7 @@ export async function upload_file(form: FormData): Promise<CreationResult> {
     const buffer = Buffer.from(await file.arrayBuffer());
 
     try {
-        const route = "files/" + file_name + file.type.split("/")[1];
+        const route = `files/${(new Date()).getTime()}.${file.type.split("/")[1]}`;
         const file_path = path.join(process.cwd(), route);
 
         await writeFile(file_path, buffer);
