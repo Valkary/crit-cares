@@ -3,6 +3,7 @@ import { type FormEvent, type ReactNode, useReducer, useRef, useState } from "re
 import { UserPlus, Ban, Check } from 'lucide-react';
 import { registerPatient } from "~/data/patients/register";
 import { useAuth } from "~/context/auth";
+import { useRouter } from "next/navigation";
 
 type CreatePatientForm = {
     names: string,
@@ -69,7 +70,7 @@ function reducer(state: CreatePatientForm, action: Partial<CreatePatientForm>): 
 
 export default function CreatePatient() {
     const { user } = useAuth();
-    const modalRef = useRef<HTMLDialogElement>(null);
+    const router = useRouter();
     const [formState, setFormState] = useReducer(reducer, create_patient_form);
     const [createState, setCreateState] = useState<CreateStates>("idle");
 
@@ -79,125 +80,113 @@ export default function CreatePatient() {
 
         if (user) {
             const create_patient_req = await registerPatient({ ...formState, user_token: user.token });
-    
-            if (create_patient_req.success) return setCreateState("success");
+
+            if (create_patient_req.success) {
+                router.refresh();
+                return setCreateState("success");
+            }
             else return setCreateState("error");
         }
     }
 
-    function handleModalOpen() {
-        modalRef.current?.showModal()
-    }
-
     return <>
-        <button className="btn" onClick={handleModalOpen}>
-            <UserPlus />
-            Agregar paciente
-        </button>
-        <dialog ref={modalRef} className="modal">
-            <div className="modal-box">
-                <form method="dialog">
-                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                </form>
-                <h3 className="font-bold text-lg">Crear paciente</h3>
-                <form
-                    method="post"
-                    className="mt-4 flex flex-col mb-4 gap-5"
-                    onSubmit={e => submitForm(e)}
-                >
-                    <label className="input input-bordered flex items-center gap-2">
-                        Nombres
+        <h3 className="font-bold text-lg">Crear paciente</h3>
+        <form
+            method="post"
+            className="mt-4 flex flex-col mb-4 gap-5"
+            onSubmit={e => submitForm(e)}
+        >
+            <label className="input input-bordered flex items-center gap-2">
+                Nombres
+                <input
+                    type="text"
+                    name="names"
+                    className="grow"
+                    placeholder="correo electrónico"
+                    value={formState.names}
+                    onChange={e => setFormState({ names: e.currentTarget.value })}
+                    required
+                />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+                Appellidos
+                <input
+                    type="text"
+                    name="last_names"
+                    className="grow"
+                    placeholder="correo electrónico"
+                    value={formState.last_names}
+                    onChange={e => setFormState({ last_names: e.currentTarget.value })}
+                    required
+                />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+                Edad
+                <input
+                    type="number"
+                    step={1}
+                    min={0}
+                    name="names"
+                    value={formState.age}
+                    onChange={e => setFormState({ age: parseInt(e.currentTarget.value) })}
+                    required
+                />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+                Télefono
+                <input
+                    type="tel"
+                    name="names"
+                    value={formState.phone}
+                    onChange={e => setFormState({ phone: parseInt(e.currentTarget.value) })}
+                    required
+                />
+            </label>
+            <label className="input input-bordered flex items-center gap-2">
+                Admisión
+                <input
+                    type="date"
+                    name="admission_date"
+                    onChange={e => setFormState({ admission_date: new Date(e.currentTarget.value) })}
+                    required
+                />
+            </label>
+            <div className="flex flex-col">
+                <div className="form-control w-52">
+                    <label className="label cursor-pointer">
+                        <span className="label-text">Ventilación mecánica</span>
                         <input
-                            type="text"
-                            name="names"
-                            className="grow"
-                            placeholder="correo electrónico"
-                            value={formState.names}
-                            onChange={e => setFormState({ names: e.currentTarget.value })}
-                            required
+                            type="checkbox"
+                            className="toggle toggle-primary"
+                            checked={formState.mechanical_ventilation}
+                            onChange={_ => setFormState({ mechanical_ventilation: !formState.mechanical_ventilation })}
                         />
                     </label>
-                    <label className="input input-bordered flex items-center gap-2">
-                        Appellidos
+                </div>
+                <div className="form-control w-52">
+                    <label className="label cursor-pointer">
+                        <span className="label-text">Exitus letalis</span>
                         <input
-                            type="text"
-                            name="last_names"
-                            className="grow"
-                            placeholder="correo electrónico"
-                            value={formState.last_names}
-                            onChange={e => setFormState({ last_names: e.currentTarget.value })}
-                            required
+                            type="checkbox"
+                            className="toggle toggle-primary"
+                            checked={formState.exitus_letalis}
+                            onChange={_ => setFormState({ exitus_letalis: !formState.exitus_letalis })}
                         />
                     </label>
-                    <label className="input input-bordered flex items-center gap-2">
-                        Edad
+                </div>
+                <div className="form-control w-52">
+                    <label className="label cursor-pointer">
+                        <span className="label-text">Alta médica</span>
                         <input
-                            type="number"
-                            step={1}
-                            min={0}
-                            name="names"
-                            value={formState.age}
-                            onChange={e => setFormState({ age: parseInt(e.currentTarget.value) })}
-                            required
+                            type="checkbox"
+                            className="toggle toggle-primary"
+                            checked={formState.discharged}
+                            onChange={_ => setFormState({ discharged: !formState.discharged })}
                         />
                     </label>
-                    <label className="input input-bordered flex items-center gap-2">
-                        Télefono
-                        <input
-                            type="tel"
-                            name="names"
-                            value={formState.phone}
-                            onChange={e => setFormState({ phone: parseInt(e.currentTarget.value) })}
-                            required
-                        />
-                    </label>
-                    <label className="input input-bordered flex items-center gap-2">
-                        Admisión
-                        <input
-                            type="date"
-                            name="admission_date"
-                            onChange={e => setFormState({ admission_date: new Date(e.currentTarget.value) })}
-                            required
-                        />
-                    </label>
-                    <div className="flex flex-col">
-                        <div className="form-control w-52">
-                            <label className="label cursor-pointer">
-                                <span className="label-text">Ventilación mecánica</span>
-                                <input
-                                    type="checkbox"
-                                    className="toggle toggle-primary"
-                                    checked={formState.mechanical_ventilation}
-                                    onChange={_ => setFormState({ mechanical_ventilation: !formState.mechanical_ventilation })}
-                                />
-                            </label>
-                        </div>
-                        <div className="form-control w-52">
-                            <label className="label cursor-pointer">
-                                <span className="label-text">Exitus letalis</span>
-                                <input
-                                    type="checkbox"
-                                    className="toggle toggle-primary"
-                                    checked={formState.exitus_letalis}
-                                    onChange={_ => setFormState({ exitus_letalis: !formState.exitus_letalis })}
-                                />
-                            </label>
-                        </div>
-                        <div className="form-control w-52">
-                            <label className="label cursor-pointer">
-                                <span className="label-text">Alta médica</span>
-                                <input
-                                    type="checkbox"
-                                    className="toggle toggle-primary"
-                                    checked={formState.discharged}
-                                    onChange={_ => setFormState({ discharged: !formState.discharged })}
-                                />
-                            </label>
-                        </div>
-                    </div>
-                    {button_states[createState]}
-                </form>
+                </div>
             </div>
-        </dialog>
+            {button_states[createState]}
+        </form>
     </>
 }

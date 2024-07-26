@@ -14,6 +14,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import Drawer from '~/components/ui/drawer';
+import CreatePatientModalButton from './create_patient_button';
 
 
 export default async function Page() {
@@ -32,6 +33,9 @@ export default async function Page() {
         <Table>
             <TableCaption>Tabla de pacientes</TableCaption>
             <TableHeader>
+                <TableRow>
+                    <TableHead colSpan={10}><CreatePatientModalButton /></TableHead>
+                </TableRow>
                 <TableRow>
                     <TableHead></TableHead>
                     <TableHead>Nombres</TableHead>

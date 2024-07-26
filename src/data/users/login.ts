@@ -4,6 +4,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { cookies } from 'next/headers';
+import { redirect } from "next/navigation";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -27,7 +28,7 @@ type UnsuccesfulLogin = {
     msg: string
 }
 
-export async function loginUser(login_creds: LoginSchema): Promise<SuccessfulLogin | UnsuccesfulLogin> {
+export async function login(login_creds: LoginSchema): Promise<SuccessfulLogin | UnsuccesfulLogin> {
     const res = login_schema.safeParse(login_creds);
 
     if (res.error)
@@ -77,4 +78,30 @@ export async function loginUser(login_creds: LoginSchema): Promise<SuccessfulLog
 
 export async function logout() {
     cookies().delete('token');
+    return;
+}
+
+export async function get_user_creds(): Promise<{ success: false, msg: string } | { success: true, user: User }> {
+    const token = cookies().get('token')?.value;
+
+    if (!token)
+        return {
+            success: false,
+            msg: "Usuario incorrecto"
+        }
+
+    try {
+        const user = jwt.verify(token, env.JWT_SECRET) as User;
+
+        return {
+            success: true,
+            user
+        }
+    } catch (err) {
+        console.error(err);
+        return {
+            success: false,
+            msg: "Usuario incorrecto"
+        }
+    }
 }

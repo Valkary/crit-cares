@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useAuth } from "~/context/auth";
-import { loginUser } from "~/data/users/login";
+import { login } from "~/data/users/login";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -41,19 +41,19 @@ export default function Page() {
   });
 
   async function handleLogin(values: FormLoginSchema) {
-    const login = await loginUser(values);
+    const login_req = await login(values);
 
-    if (!login.success) {
+    if (!login_req.success) {
       toast({
         variant: "destructive",
         title: "Error de inicio de sesión!",
-        description: login.msg
+        description: login_req.msg
       });
       return;
     }
       
-    loginContextUser(login.user);
-    router.push("/logged");
+    loginContextUser(login_req.user);
+    router.push("/logged/patients");
   }
 
   return (
