@@ -4,42 +4,10 @@ import { z } from "zod";
 import jwt from "jsonwebtoken";
 
 import { apache_scores, follow_up_notes, users } from "~/server/db/schema";
-import { CreationResult, FetchResult, User } from "~/types";
+import type { CreationResult, User } from "~/types";
 import { env } from "~/env";
 import { db } from "~/server/db";
-
-const apacheScoreObjSchema = z.object({
-    age: z.number(),
-    temperature: z.number(),
-    blood_pressure: z.number(),
-    ph: z.number(),
-    heart_rate: z.number(),
-    respiratory_rate: z.number(),
-    sodium: z.number(),
-    potassium: z.number(),
-    creatinine: z.number(),
-});
-
-const schemaWithoutApacheScore = z.object({
-    user_token: z.string(),
-    patient_id: z.number().int(),
-    title: z.string(),
-    description: z.string(),
-    apache_score: z.literal(false),
-    apache_score_obj: z.null(),
-});
-
-const schemaWithApacheScore = z.object({
-    user_token: z.string(),
-    patient_id: z.number().int(),
-    title: z.string(),
-    description: z.string(),
-    apache_score: z.literal(true),
-    apache_score_obj: apacheScoreObjSchema,
-});
-
-const create_followup_note_schema = z.union([schemaWithoutApacheScore, schemaWithApacheScore]);
-export type CreateFollowupNoteSchema = z.infer<typeof create_followup_note_schema>;
+import { create_followup_note_schema, CreateFollowupNoteSchema } from "../schemas";
 
 export async function create_followup_note(note: CreateFollowupNoteSchema): Promise<CreationResult> {
     const res = create_followup_note_schema.safeParse(note);

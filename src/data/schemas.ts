@@ -10,3 +10,34 @@ export const register_schema = z.object({
 });
 
 export type RegisterSchema = z.infer<typeof register_schema>;
+
+export const apacheScoreObjSchema = z.object({
+    age: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Age must be a positive number" }),
+    temperature: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Temperature must be a positive number" }),
+    blood_pressure: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Blood pressure must be a positive number" }),
+    ph: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "pH must be a positive number" }),
+    heart_rate: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Heart rate must be a positive number" }),
+    respiratory_rate: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Respiratory rate must be a positive number" }),
+    sodium: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Sodium must be a positive number" }),
+    potassium: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Potassium must be a positive number" }),
+    creatinine: z.coerce.number({ message: "Este dato es necesario" }).min(0, { message: "Creatinine must be a positive number" }),
+});
+
+const create_note_base_schema = z.object({
+    user_token: z.string(),
+    patient_id: z.number().int(),
+    title: z.string({ message: "El título es necesario" }).min(3, { message: "Mínimo 3 caracteres" }),
+    description: z.string({ message: "La descripción es necesaria" }).min(3, { message: "Mínimo 3 caracteres" }),
+});
+
+const note_without_apache_schema = z.object({
+    apache_score: z.literal(false),
+    apache_score_obj: z.null(),
+})
+const note_with_apache_schema = z.object({
+    apache_score: z.literal(true),
+    apache_score_obj: apacheScoreObjSchema,
+})
+
+export const create_followup_note_schema = create_note_base_schema.and(z.union([note_without_apache_schema, note_with_apache_schema]));
+export type CreateFollowupNoteSchema = z.infer<typeof create_followup_note_schema>

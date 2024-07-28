@@ -1,8 +1,9 @@
 "use client";
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+
+import { get_user_creds, logout } from "~/data/users/login";
 import type { User } from "~/types";
-import { logout } from "~/data/users/login";
 
 export type UserRole = "admin" | "doctor" | "secretary" | "readonly";
 
@@ -23,34 +24,37 @@ export default function AuthContextProvider({ children }: { children: ReactNode 
     const path = usePathname();
     const [user, setUser] = useState<User | null>(null);
 
-    function checkUserCreds() {
-        if (user !== null)
-            return true;
-
-        const user_creds = localStorage.getItem("user_creds");
-        if (!user_creds) return false;
-        setUser(JSON.parse(user_creds) as User);
-        return true;
+    async function getUserCreds() {
+        const user_creds = await get_user_creds();
+        if (!user_creds.success) return null;
+        return user_creds.user;
     }
 
-    // Get user credentials from local storage if they exist
+    async function checkUserCreds() {
+        if (user !== null) return true;
+        const user_req = await getUserCreds();
+
+        setUser(user_req);
+        return !!user_req;
+    }
+
     useEffect(() => {
         if (path === "/register") return;
 
-        if (!checkUserCreds())
-            router.push("/login?toast=error&msg=Usuario no definido");
+        checkUserCreds()
+            .then(is_valid_user => {
+                if (!is_valid_user)
+                    router.push("/login?toast=error&msg=Usuario no definido");
+            });
     }, [path]);
 
     function loginUser(user: User) {
-        localStorage.setItem("user_creds", JSON.stringify(user));
         setUser(user);
     }
 
     function logoutUser() {
-        localStorage.removeItem("user_creds");
         setUser(null);
         logout();
-        // router.push("/login");
     }
 
     return <AuthContext.Provider value={{ user, loginUser, logoutUser }}>

@@ -27,7 +27,7 @@ import { useToast } from "~/components/ui/use-toast";
 const login_schema = z.object({
   email: z.string({ message: "Requerido" }).email({ message: "Ingrese un email válido" }),
   password: z.string({ message: "Requerido" }).min(5, { message: "Contraseña muy corta" })
-})
+});
 
 type FormLoginSchema = z.infer<typeof login_schema>;
 
