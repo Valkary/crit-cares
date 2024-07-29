@@ -1,4 +1,1 @@
-
-export function upload_pdf(pdf: File) {
-
-}
+export function upload_pdf(pdf: File) {}
