@@ -1,28 +1,28 @@
-'use client'
-import { Ban, Check, UserPlus } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+'use client';
+import { Ban, Check, UserPlus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import {
 	type FormEvent,
 	type ReactNode,
 	useReducer,
 	useRef,
 	useState,
-} from 'react'
-import { useAuth } from '~/context/auth'
-import { registerPatient } from '~/data/patients/register'
+} from 'react';
+import { useAuth } from '~/context/auth';
+import { registerPatient } from '~/data/patients/register';
 
 type CreatePatientForm = {
-	names: string
-	last_names: string
-	age: number
-	phone: number
-	admission_date: Date
-	mechanical_ventilation: boolean
-	exitus_letalis: boolean
-	discharged: boolean
-}
+	names: string;
+	last_names: string;
+	age: number;
+	phone: number;
+	admission_date: Date;
+	mechanical_ventilation: boolean;
+	exitus_letalis: boolean;
+	discharged: boolean;
+};
 
-type CreateStates = 'idle' | 'loading' | 'error' | 'success'
+type CreateStates = 'idle' | 'loading' | 'error' | 'success';
 
 const create_patient_form: CreatePatientForm = {
 	names: '',
@@ -33,7 +33,7 @@ const create_patient_form: CreatePatientForm = {
 	mechanical_ventilation: false,
 	exitus_letalis: false,
 	discharged: false,
-}
+};
 
 const button_states: Record<CreateStates, ReactNode> = {
 	idle: (
@@ -69,7 +69,7 @@ const button_states: Record<CreateStates, ReactNode> = {
 			<span>Paciente creado</span>
 		</button>
 	),
-}
+};
 
 function reducer(
 	state: CreatePatientForm,
@@ -78,31 +78,31 @@ function reducer(
 	return {
 		...state,
 		...action,
-	}
+	};
 }
 
 export default function CreatePatient() {
-	const { user } = useAuth()
-	const router = useRouter()
-	const [formState, setFormState] = useReducer(reducer, create_patient_form)
-	const [createState, setCreateState] = useState<CreateStates>('idle')
+	const { user } = useAuth();
+	const router = useRouter();
+	const [formState, setFormState] = useReducer(reducer, create_patient_form);
+	const [createState, setCreateState] = useState<CreateStates>('idle');
 
 	async function submitForm(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault()
-		setCreateState('loading')
+		e.preventDefault();
+		setCreateState('loading');
 
 		if (user) {
 			const create_patient_req = await registerPatient({
 				...formState,
 				user_token: user.token,
-			})
+			});
 
 			if (create_patient_req.success) {
-				router.refresh()
-				return setCreateState('success')
+				router.refresh();
+				return setCreateState('success');
 			}
 
-			return setCreateState('error')
+			return setCreateState('error');
 		}
 	}
 
@@ -223,5 +223,5 @@ export default function CreatePatient() {
 				{button_states[createState]}
 			</form>
 		</>
-	)
+	);
 }

@@ -1,18 +1,18 @@
-'use client'
-import { BrainIcon, Menu } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Button } from '~/components/ui/button'
-import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet'
-import type { User } from '~/types'
-import type { Route } from './layout'
-import UserDropdownMenu from './user_dropdown_menu'
+'use client';
+import { BrainIcon, Menu } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from '~/components/ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/sheet';
+import type { User } from '~/types';
+import type { Route } from './layout';
+import UserDropdownMenu from './user_dropdown_menu';
 
 export default function Header({
 	routes,
 	user,
 }: { routes: Route[]; user: User }) {
-	const path = usePathname()
+	const path = usePathname();
 
 	return (
 		<header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
@@ -49,5 +49,5 @@ export default function Header({
 				<UserDropdownMenu user={user} />
 			</div>
 		</header>
-	)
+	);
 }

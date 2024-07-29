@@ -1,12 +1,12 @@
-'use server'
+'use server';
 
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm';
 import {
 	calculate_apache_score,
 	get_survival_percentage,
-} from '~/data/functions/apache_score'
-import { db } from '~/server/db'
-import { apache_scores, follow_up_notes, patients } from '~/server/db/schema'
+} from '~/data/functions/apache_score';
+import { db } from '~/server/db';
+import { apache_scores, follow_up_notes, patients } from '~/server/db/schema';
 
 export default async function DetailFollowupNote({
 	note_id,
@@ -39,9 +39,9 @@ export default async function DetailFollowupNote({
 				apache_scores,
 				eq(follow_up_notes.apache_score_id, apache_scores.id),
 			)
-	)[0]
+	)[0];
 
-	if (!patient_note) return <>Error fetching note</>
+	if (!patient_note) return <>Error fetching note</>;
 
 	return (
 		<div className="flex flex-col gap-2 w-full">
@@ -120,5 +120,5 @@ export default async function DetailFollowupNote({
 				</>
 			)}
 		</div>
-	)
+	);
 }

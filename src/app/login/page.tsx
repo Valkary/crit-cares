@@ -1,16 +1,16 @@
-'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Button } from '~/components/ui/button'
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '~/components/ui/button';
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from '~/components/ui/card'
+} from '~/components/ui/card';
 import {
 	Form,
 	FormControl,
@@ -18,11 +18,11 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
-import { useToast } from '~/components/ui/use-toast'
-import { useAuth } from '~/context/auth'
-import { login } from '~/data/users/login'
+} from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
+import { useToast } from '~/components/ui/use-toast';
+import { useAuth } from '~/context/auth';
+import { login } from '~/data/users/login';
 
 const login_schema = z.object({
 	email: z
@@ -31,33 +31,33 @@ const login_schema = z.object({
 	password: z
 		.string({ message: 'Requerido' })
 		.min(5, { message: 'Contraseña muy corta' }),
-})
+});
 
-type FormLoginSchema = z.infer<typeof login_schema>
+type FormLoginSchema = z.infer<typeof login_schema>;
 
 export default function Page() {
-	const { loginUser: loginContextUser } = useAuth()
-	const router = useRouter()
-	const { toast } = useToast()
+	const { loginUser: loginContextUser } = useAuth();
+	const router = useRouter();
+	const { toast } = useToast();
 
 	const form = useForm<FormLoginSchema>({
 		resolver: zodResolver(login_schema),
-	})
+	});
 
 	async function handleLogin(values: FormLoginSchema) {
-		const login_req = await login(values)
+		const login_req = await login(values);
 
 		if (!login_req.success) {
 			toast({
 				variant: 'destructive',
 				title: 'Error de inicio de sesión!',
 				description: login_req.msg,
-			})
-			return
+			});
+			return;
 		}
 
-		loginContextUser(login_req.user)
-		router.push('/logged/patients')
+		loginContextUser(login_req.user);
+		router.push('/logged/patients');
 	}
 
 	return (
@@ -117,5 +117,5 @@ export default function Page() {
 				</CardContent>
 			</Card>
 		</main>
-	)
+	);
 }

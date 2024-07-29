@@ -1,10 +1,10 @@
-'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '../ui/button'
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '../ui/button';
 import {
 	Form,
 	FormControl,
@@ -12,24 +12,24 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '../ui/form'
-import { Input } from '../ui/input'
-import { Switch } from '../ui/switch'
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { Switch } from '../ui/switch';
 
-import { create_followup_note } from '~/data/followup_notes/create_followup_note'
+import { create_followup_note } from '~/data/followup_notes/create_followup_note';
 import {
 	type CreateFollowupNoteSchema,
 	create_followup_note_schema,
-} from '~/data/schemas'
-import { useToast } from '../ui/use-toast'
-import ApacheScoreForm from './apache_score_form'
+} from '~/data/schemas';
+import { useToast } from '../ui/use-toast';
+import ApacheScoreForm from './apache_score_form';
 
 export default function CreateFollowupNote({
 	token,
 	patient_id,
 }: { token: string; patient_id: number }) {
-	const router = useRouter()
-	const { toast } = useToast()
+	const router = useRouter();
+	const { toast } = useToast();
 
 	const form = useForm<CreateFollowupNoteSchema>({
 		resolver: zodResolver(create_followup_note_schema),
@@ -41,23 +41,23 @@ export default function CreateFollowupNote({
 			apache_score: false,
 			apache_score_obj: null,
 		},
-	})
+	});
 
 	async function handleSubmit(values: CreateFollowupNoteSchema) {
-		const req = await create_followup_note(values)
+		const req = await create_followup_note(values);
 
 		if (req.success)
 			toast({
 				variant: 'success',
 				title: 'Mierda creada en la db',
-			})
+			});
 		else
 			toast({
 				variant: 'destructive',
 				title: 'Yeet',
-			})
+			});
 
-		router.refresh()
+		router.refresh();
 	}
 
 	return (
@@ -122,5 +122,5 @@ export default function CreateFollowupNote({
 				</form>
 			</Form>
 		</div>
-	)
+	);
 }

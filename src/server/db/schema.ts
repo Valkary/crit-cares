@@ -1,4 +1,4 @@
-import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
 	id: integer('id').primaryKey(),
@@ -11,7 +11,7 @@ export const users = sqliteTable('users', {
 	}).notNull(),
 	phone: text('phone').notNull(),
 	creation_date: integer('creation_date', { mode: 'timestamp' }).notNull(),
-})
+});
 
 export const patient_documents = sqliteTable('patient_documents', {
 	id: integer('id').primaryKey(),
@@ -23,7 +23,7 @@ export const patient_documents = sqliteTable('patient_documents', {
 	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
 		() => new Date(),
 	),
-})
+});
 
 export const patients = sqliteTable('patients', {
 	id: integer('id').primaryKey(),
@@ -46,7 +46,7 @@ export const patients = sqliteTable('patients', {
 	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
 		() => new Date(),
 	),
-})
+});
 
 export const apache_scores = sqliteTable('apache_scores', {
 	id: integer('id').primaryKey(),
@@ -65,7 +65,7 @@ export const apache_scores = sqliteTable('apache_scores', {
 	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
 		() => new Date(),
 	),
-})
+});
 
 export const follow_up_notes = sqliteTable('follow_up_notes', {
 	id: integer('id').primaryKey(),
@@ -83,4 +83,4 @@ export const follow_up_notes = sqliteTable('follow_up_notes', {
 	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
 		() => new Date(),
 	),
-})
+});

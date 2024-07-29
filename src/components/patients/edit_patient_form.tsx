@@ -1,34 +1,34 @@
-'use client'
-import { useState } from 'react'
-import type { PatientModel } from '~/data/patients/get_patients'
+'use client';
+import { useState } from 'react';
+import type { PatientModel } from '~/data/patients/get_patients';
 
 export default function EditPatient({
 	patient_data,
 }: { patient_data: PatientModel }) {
-	const [patient, setPatient] = useState(patient_data)
-	const [editMode, setEditMode] = useState(false)
+	const [patient, setPatient] = useState(patient_data);
+	const [editMode, setEditMode] = useState(false);
 
 	// Function to handle edit mode toggle
 	const handleEditModeToggle = () => {
-		setEditMode(!editMode)
-	}
+		setEditMode(!editMode);
+	};
 
 	// Function to handle form submission (save changes)
 	const handleSaveChanges = async () => {
 		try {
 			// Replace with actual update logic to save changes to the database
 			//await patients.update(patient.id, patient);
-			console.log('Changes saved successfully!')
-			setEditMode(false) // Exit edit mode after saving changes
+			console.log('Changes saved successfully!');
+			setEditMode(false); // Exit edit mode after saving changes
 		} catch (error) {
-			console.error('Error saving changes:', error)
+			console.error('Error saving changes:', error);
 			// Handle error
 		}
-	}
+	};
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target
-		setPatient({ ...patient, [name]: value })
-	}
+		const { name, value } = e.target;
+		setPatient({ ...patient, [name]: value });
+	};
 
 	return (
 		<form onSubmit={handleSaveChanges}>
@@ -165,5 +165,5 @@ export default function EditPatient({
 				</div>
 			)}
 		</form>
-	)
+	);
 }

@@ -1,5 +1,5 @@
-'use server'
-import { get_patient_notes } from '~/data/followup_notes/get_followup_notes'
+'use server';
+import { get_patient_notes } from '~/data/followup_notes/get_followup_notes';
 import {
 	Table,
 	TableBody,
@@ -8,13 +8,13 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '../ui/table'
-import DetailFollowupNote from './detail_followup_note_button'
+} from '../ui/table';
+import DetailFollowupNote from './detail_followup_note_button';
 
 export default async function FollowupNoteHistory({
 	patient_id,
 }: { patient_id: number }) {
-	const notes = await get_patient_notes(patient_id)
+	const notes = await get_patient_notes(patient_id);
 
 	return (
 		<Table>
@@ -36,9 +36,9 @@ export default async function FollowupNoteHistory({
 								<DetailFollowupNote patient_id={patient_id} note={note} />
 							</TableCell>
 						</TableRow>
-					)
+					);
 				})}
 			</TableBody>
 		</Table>
-	)
+	);
 }

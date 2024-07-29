@@ -1,6 +1,6 @@
-'use server'
+'use server';
 
-import { get_patient_documents } from '~/data/files'
+import { get_patient_documents } from '~/data/files';
 import {
 	Table,
 	TableBody,
@@ -9,16 +9,16 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '../ui/table'
-import ViewFileButton from './view_file_button'
+} from '../ui/table';
+import ViewFileButton from './view_file_button';
 
 export default async function PatientFiles({
 	patient_id,
 }: { patient_id: number }) {
-	const res = await get_patient_documents(patient_id)
-	if (!res.success) return <span>Error</span>
+	const res = await get_patient_documents(patient_id);
+	if (!res.success) return <span>Error</span>;
 
-	const files = res.data
+	const files = res.data;
 
 	return (
 		<Table>
@@ -40,9 +40,9 @@ export default async function PatientFiles({
 								<ViewFileButton file={file} />
 							</TableCell>
 						</TableRow>
-					)
+					);
 				})}
 			</TableBody>
 		</Table>
-	)
+	);
 }

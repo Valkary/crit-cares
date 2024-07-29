@@ -1,12 +1,12 @@
-'use client'
+'use client';
 
-import { BrainIcon } from 'lucide-react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import type { Route } from './layout'
+import { BrainIcon } from 'lucide-react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type { Route } from './layout';
 
 export default function Sidebar({ routes }: { routes: Route[] }) {
-	const path = usePathname()
+	const path = usePathname();
 
 	return (
 		<div className="hidden border-r bg-muted/40 md:block">
@@ -33,5 +33,5 @@ export default function Sidebar({ routes }: { routes: Route[] }) {
 				</div>
 			</div>
 		</div>
-	)
+	);
 }

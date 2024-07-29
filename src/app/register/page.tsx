@@ -1,16 +1,16 @@
-'use client'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
-import { Button } from '~/components/ui/button'
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { Button } from '~/components/ui/button';
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from '~/components/ui/card'
+} from '~/components/ui/card';
 import {
 	Form,
 	FormControl,
@@ -18,51 +18,51 @@ import {
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
+} from '~/components/ui/form';
+import { Input } from '~/components/ui/input';
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '~/components/ui/select'
-import { useToast } from '~/components/ui/use-toast'
+} from '~/components/ui/select';
+import { useToast } from '~/components/ui/use-toast';
 
-import { register_schema } from '~/data/schemas'
-import { registerUser } from '~/data/users/register'
+import { register_schema } from '~/data/schemas';
+import { registerUser } from '~/data/users/register';
 
 const form_register_schema = register_schema
 	.merge(z.object({ confirm_password: z.string({ message: 'Requerido' }) }))
 	.refine((form) => form.password === form.confirm_password, {
 		message: 'Las contraseñas deben coincidir',
 		path: ['confirm_password'],
-	})
+	});
 
-type FormRegisterSchema = z.infer<typeof form_register_schema>
+type FormRegisterSchema = z.infer<typeof form_register_schema>;
 
 export default function Page() {
-	const router = useRouter()
-	const { toast } = useToast()
+	const router = useRouter();
+	const { toast } = useToast();
 
 	const form = useForm<FormRegisterSchema>({
 		resolver: zodResolver(form_register_schema),
 		defaultValues: {
 			role: 'doctor',
 		},
-	})
+	});
 
 	async function submitForm(values: FormRegisterSchema) {
-		const { confirm_password, ...register_data } = values
-		const data = await registerUser(register_data)
+		const { confirm_password, ...register_data } = values;
+		const data = await registerUser(register_data);
 		if (!data.success) {
 			toast({
 				variant: 'destructive',
 				title: 'Error creando usuario!',
 				description: data.msg,
-			})
+			});
 		} else {
-			router.push('/login')
+			router.push('/login');
 		}
 	}
 
@@ -207,5 +207,5 @@ export default function Page() {
 				</CardContent>
 			</Card>
 		</main>
-	)
+	);
 }

@@ -5,15 +5,15 @@ import {
 	SheetHeader,
 	SheetTitle,
 	SheetTrigger,
-} from '@/components/ui/sheet'
-import { type ReactNode, Suspense } from 'react'
+} from '@/components/ui/sheet';
+import { type ReactNode, Suspense } from 'react';
 
 type Props = {
-	title?: string
-	trigger?: string | ReactNode
-	description?: string
-	children: ReactNode
-}
+	title?: string;
+	trigger?: string | ReactNode;
+	description?: string;
+	children: ReactNode;
+};
 
 export default function Drawer({
 	children,
@@ -37,5 +37,5 @@ export default function Drawer({
 				</div>
 			</SheetContent>
 		</Sheet>
-	)
+	);
 }

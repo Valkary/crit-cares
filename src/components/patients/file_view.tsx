@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 export default function FileView({ file_url }: { file_url: string }) {
 	return (
@@ -8,5 +8,5 @@ export default function FileView({ file_url }: { file_url: string }) {
 			className="w-full h-full"
 			title="File"
 		/>
-	)
+	);
 }

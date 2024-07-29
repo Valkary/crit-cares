@@ -1,17 +1,17 @@
-import type { UseFormReturn } from 'react-hook-form'
-import type { CreateFollowupNoteSchema } from '~/data/schemas'
+import type { UseFormReturn } from 'react-hook-form';
+import type { CreateFollowupNoteSchema } from '~/data/schemas';
 import {
 	FormControl,
 	FormField,
 	FormItem,
 	FormLabel,
 	FormMessage,
-} from '../ui/form'
-import { Input } from '../ui/input'
+} from '../ui/form';
+import { Input } from '../ui/input';
 
 type Props = {
-	form: UseFormReturn<CreateFollowupNoteSchema>
-}
+	form: UseFormReturn<CreateFollowupNoteSchema>;
+};
 
 export default function ApacheScore({ form }: Props) {
 	return (
@@ -146,5 +146,5 @@ export default function ApacheScore({ form }: Props) {
 				)}
 			/>
 		</div>
-	)
+	);
 }

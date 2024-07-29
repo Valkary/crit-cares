@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
 	DropdownMenu,
@@ -8,15 +8,15 @@ import {
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { CircleUser, LogOutIcon } from 'lucide-react'
-import { Button } from '~/components/ui/button'
-import { logout } from '~/data/users/login'
-import type { User } from '~/types'
+} from '@/components/ui/dropdown-menu';
+import { CircleUser, LogOutIcon } from 'lucide-react';
+import { Button } from '~/components/ui/button';
+import { logout } from '~/data/users/login';
+import type { User } from '~/types';
 
 export default function UserDropdownMenu({ user }: { user: User }) {
 	async function handleLogout() {
-		await logout()
+		await logout();
 	}
 
 	return (
@@ -40,5 +40,5 @@ export default function UserDropdownMenu({ user }: { user: User }) {
 				</DropdownMenuGroup>
 			</DropdownMenuContent>
 		</DropdownMenu>
-	)
+	);
 }

@@ -1,4 +1,4 @@
-'use server'
+'use server';
 import {
 	Table,
 	TableBody,
@@ -7,24 +7,24 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '@/components/ui/table'
-import { InfoIcon } from 'lucide-react'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import DetailPatient from '~/components/patients/detail_patient'
-import Drawer from '~/components/ui/drawer'
-import { get_doctor_patients } from '~/data/patients/get_patients'
-import CreatePatientModalButton from './create_patient_button'
+} from '@/components/ui/table';
+import { InfoIcon } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import DetailPatient from '~/components/patients/detail_patient';
+import Drawer from '~/components/ui/drawer';
+import { get_doctor_patients } from '~/data/patients/get_patients';
+import CreatePatientModalButton from './create_patient_button';
 
 export default async function Page() {
-	const token = cookies().get('token')?.value
+	const token = cookies().get('token')?.value;
 
-	if (!token) return redirect('/login?toast=error&msg=Usuario no definido')
+	if (!token) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	const req = await get_doctor_patients(token)
+	const req = await get_doctor_patients(token);
 
-	if (!req.success) return <span>User error</span>
-	const patients = req.data
+	if (!req.success) return <span>User error</span>;
+	const patients = req.data;
 
 	return (
 		<>
@@ -75,10 +75,10 @@ export default async function Page() {
 									{patient.discharge_date?.toISOString() ?? '-'}
 								</TableCell>
 							</TableRow>
-						)
+						);
 					})}
 				</TableBody>
 			</Table>
 		</>
-	)
+	);
 }

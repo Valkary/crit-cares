@@ -1,25 +1,25 @@
-'use server'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { NotepadText } from 'lucide-react'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
-import type { PatientModel } from '~/data/patients/get_patients'
-import { ModalButton } from '../ui/modal'
-import CreateFollowupNote from './create_followup_note'
-import EditPatient from './edit_patient_form'
-import FollowupNoteHistory from './followup_notes_history'
-import PatientFiles from './patient_files'
-import UploadFile from './upload_file'
+'use server';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { NotepadText } from 'lucide-react';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { Suspense } from 'react';
+import type { PatientModel } from '~/data/patients/get_patients';
+import { ModalButton } from '../ui/modal';
+import CreateFollowupNote from './create_followup_note';
+import EditPatient from './edit_patient_form';
+import FollowupNoteHistory from './followup_notes_history';
+import PatientFiles from './patient_files';
+import UploadFile from './upload_file';
 
 type Props = {
-	patient_data: PatientModel
-}
+	patient_data: PatientModel;
+};
 
 export default async function DetailPatient({ patient_data }: Props) {
-	const token = cookies().get('token')?.value
+	const token = cookies().get('token')?.value;
 
-	if (!token) return redirect('/login?toast=error&msg=Usuario no definido')
+	if (!token) return redirect('/login?toast=error&msg=Usuario no definido');
 
 	return (
 		<div className="w-full flex flex-col gap-2">
@@ -58,5 +58,5 @@ export default async function DetailPatient({ patient_data }: Props) {
 				</TabsContent>
 			</Tabs>
 		</div>
-	)
+	);
 }

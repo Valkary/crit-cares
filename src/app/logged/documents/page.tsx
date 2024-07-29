@@ -1,10 +1,10 @@
-'use server'
-import { eq, sql } from 'drizzle-orm'
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-import { db } from '~/server/db'
+'use server';
+import { eq, sql } from 'drizzle-orm';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { db } from '~/server/db';
 
-import ViewFileButton from '~/components/patients/view_file_button'
+import ViewFileButton from '~/components/patients/view_file_button';
 import {
 	Table,
 	TableBody,
@@ -13,18 +13,18 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from '~/components/ui/table'
-import { validate_user_token } from '~/data/users/validate_user'
-import { patient_documents, patients } from '~/server/db/schema'
+} from '~/components/ui/table';
+import { validate_user_token } from '~/data/users/validate_user';
+import { patient_documents, patients } from '~/server/db/schema';
 
 export default async function Page() {
-	const token = cookies().get('token')?.value
+	const token = cookies().get('token')?.value;
 
-	if (!token) return redirect('/login?toast=error&msg=Usuario no definido')
+	if (!token) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	const doctor = await validate_user_token(token)
+	const doctor = await validate_user_token(token);
 
-	if (!doctor) return <span>Acceso denegado</span>
+	if (!doctor) return <span>Acceso denegado</span>;
 
 	const documents = await db
 		.select({
@@ -33,7 +33,10 @@ export default async function Page() {
 		})
 		.from(patients)
 		.where(eq(patients.doctor_id, doctor.id))
-		.innerJoin(patient_documents, eq(patient_documents.patient_id, patients.id))
+		.innerJoin(
+			patient_documents,
+			eq(patient_documents.patient_id, patients.id),
+		);
 
 	return (
 		<>
@@ -61,10 +64,10 @@ export default async function Page() {
 									<ViewFileButton file={doc.file} />
 								</TableCell>
 							</TableRow>
-						)
+						);
 					})}
 				</TableBody>
 			</Table>
 		</>
-	)
+	);
 }

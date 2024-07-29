@@ -1,27 +1,27 @@
-'use client'
-import { type ReactNode, createContext, useContext, useReducer } from 'react'
-import Modal from '~/components/ui/modal'
+'use client';
+import { type ReactNode, createContext, useContext, useReducer } from 'react';
+import Modal from '~/components/ui/modal';
 
-export type ModalSizes = 'sm' | 'md' | 'lg'
+export type ModalSizes = 'sm' | 'md' | 'lg';
 
 type ModalContent = {
-	title: string
-	body: ReactNode
-	size: ModalSizes
-}
+	title: string;
+	body: ReactNode;
+	size: ModalSizes;
+};
 
 type ModalValues = {
-	isOpen: boolean
-	content: ModalContent
-}
+	isOpen: boolean;
+	content: ModalContent;
+};
 
 type ModalFunctions = {
-	hideModal: () => void
-	showModal: (content?: ModalContent) => void
-	toggleModal: () => void
-}
+	hideModal: () => void;
+	showModal: (content?: ModalContent) => void;
+	toggleModal: () => void;
+};
 
-type ModalContextType = ModalValues & ModalFunctions
+type ModalContextType = ModalValues & ModalFunctions;
 
 const initial_modal_context: ModalContextType = {
 	isOpen: false,
@@ -33,9 +33,9 @@ const initial_modal_context: ModalContextType = {
 	hideModal: () => {},
 	showModal: () => {},
 	toggleModal: () => {},
-}
+};
 
-const ModalContext = createContext<ModalContextType>(initial_modal_context)
+const ModalContext = createContext<ModalContextType>(initial_modal_context);
 
 function reducer(
 	state: ModalValues,
@@ -44,28 +44,31 @@ function reducer(
 	return {
 		...state,
 		...action,
-	}
+	};
 }
 
 export default function ModalContextProvider({
 	children,
 }: { children: ReactNode }) {
-	const [modalState, setModalState] = useReducer(reducer, initial_modal_context)
+	const [modalState, setModalState] = useReducer(
+		reducer,
+		initial_modal_context,
+	);
 
 	function showModal(content?: ModalContent) {
 		setModalState({
 			...modalState,
 			isOpen: true,
 			content: content ?? modalState.content,
-		})
+		});
 	}
 
 	function hideModal() {
-		setModalState({ ...modalState, isOpen: false })
+		setModalState({ ...modalState, isOpen: false });
 	}
 
 	function toggleModal() {
-		setModalState({ ...modalState, isOpen: !modalState.isOpen })
+		setModalState({ ...modalState, isOpen: !modalState.isOpen });
 	}
 
 	return (
@@ -79,9 +82,9 @@ export default function ModalContextProvider({
 		>
 			{children}
 		</ModalContext.Provider>
-	)
+	);
 }
 
 export function useModalContext() {
-	return useContext(ModalContext)
+	return useContext(ModalContext);
 }

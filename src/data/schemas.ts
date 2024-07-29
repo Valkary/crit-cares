@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from 'zod';
 
 export const register_schema = z.object({
 	email: z
@@ -20,9 +20,9 @@ export const register_schema = z.object({
 		.string({ message: 'Requerido' })
 		.min(10, { message: 'Mínimo 10 dígitos' })
 		.max(14, { message: 'Máximo 14 dígitos' }),
-})
+});
 
-export type RegisterSchema = z.infer<typeof register_schema>
+export type RegisterSchema = z.infer<typeof register_schema>;
 
 export const apacheScoreObjSchema = z.object({
 	age: z.coerce
@@ -52,7 +52,7 @@ export const apacheScoreObjSchema = z.object({
 	creatinine: z.coerce
 		.number({ message: 'Este dato es necesario' })
 		.min(0, { message: 'Creatinine must be a positive number' }),
-})
+});
 
 const create_note_base_schema = z.object({
 	user_token: z.string(),
@@ -63,20 +63,20 @@ const create_note_base_schema = z.object({
 	description: z
 		.string({ message: 'La descripción es necesaria' })
 		.min(3, { message: 'Mínimo 3 caracteres' }),
-})
+});
 
 const note_without_apache_schema = z.object({
 	apache_score: z.literal(false),
 	apache_score_obj: z.null(),
-})
+});
 const note_with_apache_schema = z.object({
 	apache_score: z.literal(true),
 	apache_score_obj: apacheScoreObjSchema,
-})
+});
 
 export const create_followup_note_schema = create_note_base_schema.and(
 	z.union([note_without_apache_schema, note_with_apache_schema]),
-)
+);
 export type CreateFollowupNoteSchema = z.infer<
 	typeof create_followup_note_schema
->
+>;
