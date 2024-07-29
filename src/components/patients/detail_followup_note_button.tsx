@@ -7,19 +7,19 @@ import DetailFollowupNote from './detail_followup_note'
 type Props = { patient_id: number; note: FollowupNoteModel }
 
 export default function DetailFollowupNoteButton({ note }: Props) {
-  const { showModal } = useModalContext()
+	const { showModal } = useModalContext()
 
-  function openModal() {
-    showModal({
-      title: `Nota de seguimiento`,
-      body: <DetailFollowupNote note_id={note.id} />,
-      size: 'md',
-    })
-  }
+	function openModal() {
+		showModal({
+			title: 'Nota de seguimiento',
+			body: <DetailFollowupNote note_id={note.id} />,
+			size: 'md',
+		})
+	}
 
-  return (
-    <button className="btn btn-ghost" onClick={openModal}>
-      <FolderSearch />
-    </button>
-  )
+	return (
+		<button className="btn btn-ghost" type="button" onClick={openModal}>
+			<FolderSearch />
+		</button>
+	)
 }

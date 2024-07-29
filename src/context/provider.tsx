@@ -11,24 +11,24 @@ import { ThemeProvider } from './theme'
 const queryClient = new QueryClient()
 
 export default function AppContextProvider({
-  children,
+	children,
 }: { children: ReactNode }) {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="light"
-        enableSystem
-        disableTransitionOnChange
-      >
-        <AuthContextProvider>
-          <ModalContextProvider>
-            <Modal />
-            {children}
-          </ModalContextProvider>
-          <Toaster />
-        </AuthContextProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  )
+	return (
+		<QueryClientProvider client={queryClient}>
+			<ThemeProvider
+				attribute="class"
+				defaultTheme="light"
+				enableSystem
+				disableTransitionOnChange
+			>
+				<AuthContextProvider>
+					<ModalContextProvider>
+						<Modal />
+						{children}
+					</ModalContextProvider>
+					<Toaster />
+				</AuthContextProvider>
+			</ThemeProvider>
+		</QueryClientProvider>
+	)
 }

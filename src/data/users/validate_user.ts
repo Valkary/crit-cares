@@ -9,10 +9,10 @@ import { users } from '~/server/db/schema'
 import type { User } from '~/types'
 
 export async function validate_user_token(token: string) {
-  const { email } = jwt.verify(token, env.JWT_SECRET) as User
-  const doctor = (
-    await db.select().from(users).where(eq(users.email, email))
-  )[0]
+	const { email } = jwt.verify(token, env.JWT_SECRET) as User
+	const doctor = (
+		await db.select().from(users).where(eq(users.email, email))
+	)[0]
 
-  return doctor ?? null
+	return doctor ?? null
 }
