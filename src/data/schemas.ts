@@ -80,3 +80,17 @@ export const create_followup_note_schema = create_note_base_schema.and(
 export type CreateFollowupNoteSchema = z.infer<
 	typeof create_followup_note_schema
 >;
+
+export const register_patient_schema = z.object({
+	user_token: z.string(),
+	names: z.string(),
+	last_names: z.string(),
+	age: z.coerce.number().min(0),
+	phone: z.coerce.number(),
+	admission_date: z.date(),
+	mechanical_ventilation: z.boolean(),
+	exitus_letalis: z.boolean(),
+	discharged: z.boolean(),
+});
+
+export type RegisterPatientSchema = z.infer<typeof register_patient_schema>;

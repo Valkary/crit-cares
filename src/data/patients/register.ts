@@ -6,20 +6,7 @@ import { env } from '~/env';
 import { db } from '~/server/db';
 import { patients, users } from '~/server/db/schema';
 import type { CreationResult, User } from '~/types';
-
-const register_patient_schema = z.object({
-	user_token: z.string(),
-	names: z.string(),
-	last_names: z.string(),
-	age: z.number().min(0),
-	phone: z.number(),
-	admission_date: z.date(),
-	mechanical_ventilation: z.boolean(),
-	exitus_letalis: z.boolean(),
-	discharged: z.boolean(),
-});
-
-type RegisterPatientSchema = z.infer<typeof register_patient_schema>;
+import { type RegisterPatientSchema, register_patient_schema } from '../schemas';
 
 export async function registerPatient(
 	patient: RegisterPatientSchema,

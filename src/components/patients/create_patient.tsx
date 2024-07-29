@@ -1,227 +1,275 @@
 'use client';
-import { Ban, Check, UserPlus } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
-import {
-	type FormEvent,
-	type ReactNode,
-	useReducer,
-	useRef,
-	useState,
-} from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '~/context/auth';
+import {
+	Form,
+	FormControl,
+	FormField,
+	FormItem,
+	FormLabel,
+	FormMessage,
+} from '../ui/form';
+import { Input } from '../ui/input';
+import {
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+} from '@radix-ui/react-popover';
+import { CalendarIcon, CheckIcon, LoaderCircle, XIcon } from 'lucide-react';
+import { cn } from '~/lib/utils';
+import { Button } from '../ui/button';
+import { Calendar } from '../ui/calendar';
+import { format } from 'date-fns';
+import { Checkbox } from '../ui/checkbox';
+import {
+	type RegisterPatientSchema,
+	register_patient_schema,
+} from '~/data/schemas';
+import { useMutation } from '@tanstack/react-query';
 import { registerPatient } from '~/data/patients/register';
-
-type CreatePatientForm = {
-	names: string;
-	last_names: string;
-	age: number;
-	phone: number;
-	admission_date: Date;
-	mechanical_ventilation: boolean;
-	exitus_letalis: boolean;
-	discharged: boolean;
-};
-
-type CreateStates = 'idle' | 'loading' | 'error' | 'success';
-
-const create_patient_form: CreatePatientForm = {
-	names: '',
-	last_names: '',
-	age: 0,
-	phone: 0,
-	admission_date: new Date(),
-	mechanical_ventilation: false,
-	exitus_letalis: false,
-	discharged: false,
-};
-
-const button_states: Record<CreateStates, ReactNode> = {
-	idle: (
-		<button
-			type="submit"
-			className="btn btn-primary w-full py-2 px-4 rounded-md"
-		>
-			<span>Crear paciente</span>
-		</button>
-	),
-	loading: (
-		<button
-			type="submit"
-			className="btn btn-primary w-full py-2 px-4 rounded-md"
-			disabled
-		>
-			<span className="loading loading-dots loading-lg" />
-		</button>
-	),
-	error: (
-		<button type="submit" className="btn btn-error w-full py-2 px-4 rounded-md">
-			<Ban />
-			<span>Error creando paciente</span>
-		</button>
-	),
-	success: (
-		<button
-			type="submit"
-			className="btn btn-success w-full py-2 px-4 rounded-md"
-			disabled
-		>
-			<Check />
-			<span>Paciente creado</span>
-		</button>
-	),
-};
-
-function reducer(
-	state: CreatePatientForm,
-	action: Partial<CreatePatientForm>,
-): CreatePatientForm {
-	return {
-		...state,
-		...action,
-	};
-}
+import { useToast } from '../ui/use-toast';
+import { useModalContext } from '~/context/modal';
 
 export default function CreatePatient() {
 	const { user } = useAuth();
 	const router = useRouter();
-	const [formState, setFormState] = useReducer(reducer, create_patient_form);
-	const [createState, setCreateState] = useState<CreateStates>('idle');
+	const { toast } = useToast();
+	const { hideModal } = useModalContext();
 
-	async function submitForm(e: FormEvent<HTMLFormElement>) {
-		e.preventDefault();
-		setCreateState('loading');
+	const form = useForm<RegisterPatientSchema>({
+		resolver: zodResolver(register_patient_schema),
+		defaultValues: {
+			user_token: user?.token,
+			discharged: false,
+			exitus_letalis: false,
+			mechanical_ventilation: false,
+		},
+	});
 
-		if (user) {
-			const create_patient_req = await registerPatient({
-				...formState,
-				user_token: user.token,
+	async function handleSubmit(values: RegisterPatientSchema) {
+		const create_patient_req = await registerPatient(values);
+
+		if (!create_patient_req.success) {
+			toast({
+				variant: 'destructive',
+				title: 'Error creando paciente',
+				description: create_patient_req.error_msg,
 			});
-
-			if (create_patient_req.success) {
-				router.refresh();
-				return setCreateState('success');
-			}
-
-			return setCreateState('error');
+			throw new Error('error');
 		}
+
+		toast({
+			variant: 'success',
+			title: 'Paciente creado correctamente',
+			description: create_patient_req.msg,
+		});
+
+		hideModal();
+		router.refresh();
+		return;
 	}
 
+	const { mutate, status } = useMutation({
+		mutationFn: handleSubmit,
+	});
+
 	return (
-		<>
-			<h3 className="font-bold text-lg">Crear paciente</h3>
+		<Form {...form}>
 			<form
-				method="post"
-				className="mt-4 flex flex-col mb-4 gap-5"
-				onSubmit={(e) => submitForm(e)}
+				onSubmit={form.handleSubmit((data) => mutate(data))}
+				className="grid gap-2 grid-cols-2"
 			>
-				<label className="input input-bordered flex items-center gap-2">
-					Nombres
-					<input
-						type="text"
-						name="names"
-						className="grow"
-						placeholder="correo electrónico"
-						value={formState.names}
-						onChange={(e) => setFormState({ names: e.currentTarget.value })}
-						required
+				<FormField
+					control={form.control}
+					name="names"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Nombres</FormLabel>
+							<FormControl>
+								<Input
+									type="text"
+									placeholder="ingrese los nombres del paciente"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="last_names"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Apellidos</FormLabel>
+							<FormControl>
+								<Input
+									type="text"
+									placeholder="ingrese los apellidos del paciente"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="age"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Edad</FormLabel>
+							<FormControl>
+								<Input
+									type="number"
+									placeholder="ingrese la edad del paciente"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="phone"
+					render={({ field }) => (
+						<FormItem>
+							<FormLabel>Teléfono</FormLabel>
+							<FormControl>
+								<Input
+									type="number"
+									placeholder="ingrese el número de teléfono del paciente"
+									{...field}
+								/>
+							</FormControl>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<FormField
+					control={form.control}
+					name="admission_date"
+					render={({ field }) => (
+						<FormItem className="flex flex-col col-span-2">
+							<FormLabel>Fecha de admisión</FormLabel>
+							<Popover>
+								<PopoverTrigger asChild>
+									<FormControl>
+										<Button
+											variant={'outline'}
+											className={cn(
+												'pl-3 text-left font-normal',
+												!field.value && 'text-muted-foreground',
+											)}
+										>
+											{field.value ? (
+												format(field.value, 'PPP')
+											) : (
+												<span>admisión</span>
+											)}
+											<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+										</Button>
+									</FormControl>
+								</PopoverTrigger>
+								<PopoverContent
+									className="w-auto p-0 bg-white rounded-lg border"
+									align="start"
+								>
+									<Calendar
+										mode="single"
+										selected={field.value}
+										onSelect={field.onChange}
+										disabled={(date: Date) =>
+											date > new Date() || date < new Date('1900-01-01')
+										}
+										initialFocus
+									/>
+								</PopoverContent>
+							</Popover>
+							<FormMessage />
+						</FormItem>
+					)}
+				/>
+				<div className="flex flex-col gap-2">
+					<FormField
+						control={form.control}
+						name="mechanical_ventilation"
+						render={({ field }) => (
+							<FormItem className="flex items-center justify-between">
+								<FormLabel className="flex-grow">
+									Ventilación mecánica
+								</FormLabel>
+								<FormControl>
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
-				</label>
-				<label className="input input-bordered flex items-center gap-2">
-					Appellidos
-					<input
-						type="text"
-						name="last_names"
-						className="grow"
-						placeholder="correo electrónico"
-						value={formState.last_names}
-						onChange={(e) =>
-							setFormState({ last_names: e.currentTarget.value })
-						}
-						required
+					<FormField
+						control={form.control}
+						name="exitus_letalis"
+						render={({ field }) => (
+							<FormItem className="flex items-center justify-between">
+								<FormLabel className="flex-grow">Exitus letalis</FormLabel>
+								<FormControl>
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
-				</label>
-				<label className="input input-bordered flex items-center gap-2">
-					Edad
-					<input
-						type="number"
-						step={1}
-						min={0}
-						name="names"
-						value={formState.age}
-						onChange={(e) =>
-							setFormState({ age: Number.parseInt(e.currentTarget.value) })
-						}
-						required
+					<FormField
+						control={form.control}
+						name="discharged"
+						render={({ field }) => (
+							<FormItem className="flex items-center justify-between">
+								<FormLabel className="flex-grow">Alta médica</FormLabel>
+								<FormControl>
+									<Checkbox
+										checked={field.value}
+										onCheckedChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
 					/>
-				</label>
-				<label className="input input-bordered flex items-center gap-2">
-					Télefono
-					<input
-						type="tel"
-						name="names"
-						value={formState.phone}
-						onChange={(e) =>
-							setFormState({ phone: Number.parseInt(e.currentTarget.value) })
-						}
-						required
-					/>
-				</label>
-				<label className="input input-bordered flex items-center gap-2">
-					Admisión
-					<input
-						type="date"
-						name="admission_date"
-						onChange={(e) =>
-							setFormState({ admission_date: new Date(e.currentTarget.value) })
-						}
-						required
-					/>
-				</label>
-				<div className="flex flex-col">
-					<div className="form-control w-52">
-						<label className="label cursor-pointer">
-							<span className="label-text">Ventilación mecánica</span>
-							<input
-								type="checkbox"
-								className="toggle toggle-primary"
-								checked={formState.mechanical_ventilation}
-								onChange={(_) =>
-									setFormState({
-										mechanical_ventilation: !formState.mechanical_ventilation,
-									})
-								}
-							/>
-						</label>
-					</div>
-					<div className="form-control w-52">
-						<label className="label cursor-pointer">
-							<span className="label-text">Exitus letalis</span>
-							<input
-								type="checkbox"
-								className="toggle toggle-primary"
-								checked={formState.exitus_letalis}
-								onChange={(_) =>
-									setFormState({ exitus_letalis: !formState.exitus_letalis })
-								}
-							/>
-						</label>
-					</div>
-					<div className="form-control w-52">
-						<label className="label cursor-pointer">
-							<span className="label-text">Alta médica</span>
-							<input
-								type="checkbox"
-								className="toggle toggle-primary"
-								checked={formState.discharged}
-								onChange={(_) =>
-									setFormState({ discharged: !formState.discharged })
-								}
-							/>
-						</label>
-					</div>
 				</div>
-				{button_states[createState]}
+				<Button
+					className="w-full col-start-1 col-span-2"
+					disabled={status === 'pending'}
+					type="submit"
+				>
+					{status === 'pending' ? (
+						<>
+							<LoaderCircle className="animate-spin" />
+							Creando paciente
+						</>
+					) : status === 'error' ? (
+						<>
+							<XIcon className="text-destructive" />
+							<span>Error creando paciente</span>
+						</>
+					) : status === 'success' ? (
+						<>
+							<CheckIcon className="text-green-400" />
+							<span>Paciente creado</span>
+						</>
+					) : (
+						<span>Crear paciente</span>
+					)}
+				</Button>
 			</form>
-		</>
+		</Form>
 	);
 }
