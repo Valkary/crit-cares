@@ -16,12 +16,12 @@ export default function useQueryParams() {
 
 	useEffect(() => {
 		const queryString = new URLSearchParams(queryParams).toString();
-		router.replace(`${pathname}?${queryString}`);
+		router.push(`${pathname}?${queryString}`);
 	}, [queryParams, pathname, router]);
 
 	function updateParams(params: Record<string, string>) {
 		setQueryParams((prev) => {
-			const newParams = { ...prev, ...params };
+			const newParams = Object.keys(params).length === 0 ? {} : { ...prev, ...params };
 
 			if (params.page === undefined) newParams.page = '0';
 			return newParams;

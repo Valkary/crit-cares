@@ -13,7 +13,6 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import DetailPatient from '~/components/patients/detail_patient';
 import Drawer from '~/components/ui/drawer';
-import CreatePatientModalButton from './create_patient_button';
 import Filters from './filters';
 import { validate_user_token } from '~/data/users/validate_user';
 import { db } from '~/server/db';
@@ -23,6 +22,9 @@ import { patients } from '~/server/db/schema';
 export type PatientSearchParams = {
 	search?: string;
 	page?: number;
+	exitus_letalis?: 'todos' | 'true' | 'false';
+	mechanical_ventilation?: 'todos' | 'true' | 'false';
+	discharged?: 'todos' | 'true' | 'false';
 };
 
 const row_limit = 5;
@@ -37,19 +39,42 @@ export default async function Page({
 
 	if (!doctor) return redirect('/login?toast=error&msg=Usuario no definido');
 
+	const { search, discharged, mechanical_ventilation, exitus_letalis } =
+		searchParams || {};
+
+	const conditions = [];
+
+	if (search)
+		conditions.push(
+			or(
+				like(patients.names, `%${searchParams?.search ?? ''}%`),
+				like(patients.last_names, `%${searchParams?.search ?? ''}%`),
+				like(patients.phone, `%${searchParams?.search ?? ''}%`),
+			),
+		);
+
+	if (discharged && discharged !== 'todos')
+		conditions.push(
+			eq(patients.discharged, searchParams.discharged === 'true'),
+		);
+
+	if (mechanical_ventilation && mechanical_ventilation !== 'todos')
+		conditions.push(
+			eq(
+				patients.mechanical_ventilation,
+				searchParams.mechanical_ventilation === 'true',
+			),
+		);
+
+	if (exitus_letalis && exitus_letalis !== 'todos')
+		conditions.push(
+			eq(patients.exitus_letalis, searchParams.exitus_letalis === 'true'),
+		);
+
 	const filtered_patients = db
 		.select()
 		.from(patients)
-		.where(
-			and(
-				eq(patients.doctor_id, doctor.id),
-				or(
-					like(patients.names, `%${searchParams?.search ?? ''}%`),
-					like(patients.last_names, `%${searchParams?.search ?? ''}%`),
-					like(patients.phone, `%${searchParams?.search ?? ''}%`),
-				),
-			),
-		);
+		.where(and(eq(patients.doctor_id, doctor.id), ...conditions));
 
 	const total_pages = Math.ceil((await filtered_patients).length / row_limit);
 
@@ -62,30 +87,10 @@ export default async function Page({
 			<h1 className="text-2xl font-bold text-primary uppercase">Pacientes</h1>
 			<Table>
 				<TableCaption>Tabla de pacientes</TableCaption>
-				<TableHeader>
-					<TableRow>
-						<TableHead colSpan={10}>
-							<CreatePatientModalButton />
-						</TableHead>
-					</TableRow>
-					<TableRow>
-						<TableHead colSpan={10}>
-							<Filters page={Number(searchParams?.page) || 0} total_pages={total_pages} />
-						</TableHead>
-					</TableRow>
-					<TableRow>
-						<TableHead />
-						<TableHead>Nombres</TableHead>
-						<TableHead>Apellidos</TableHead>
-						<TableHead>Edad</TableHead>
-						<TableHead>Teléfono</TableHead>
-						<TableHead>Admisión</TableHead>
-						<TableHead>Ventilación</TableHead>
-						<TableHead>Exitus Letalis</TableHead>
-						<TableHead>Alta</TableHead>
-						<TableHead>Fecha alta</TableHead>
-					</TableRow>
-				</TableHeader>
+				<Filters
+					page={Number(searchParams?.page) || 0}
+					total_pages={total_pages}
+				/>
 				<TableBody>
 					{db_patients.map((patient) => {
 						return (
