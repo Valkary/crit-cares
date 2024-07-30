@@ -16,8 +16,9 @@ import Drawer from '~/components/ui/drawer';
 import Filters from './filters';
 import { validate_user_token } from '~/data/users/validate_user';
 import { db } from '~/server/db';
-import { and, eq, or, like } from 'drizzle-orm';
+import { and, eq, or, like, between, gte } from 'drizzle-orm';
 import { patients } from '~/server/db/schema';
+import { fromUnixTime } from 'date-fns';
 
 export type PatientSearchParams = {
 	search?: string;
@@ -25,6 +26,8 @@ export type PatientSearchParams = {
 	exitus_letalis?: 'todos' | 'true' | 'false';
 	mechanical_ventilation?: 'todos' | 'true' | 'false';
 	discharged?: 'todos' | 'true' | 'false';
+	admission?: [number, number] | [number, null];
+	discharge?: [number, number] | [number, null];
 };
 
 const row_limit = 5;
@@ -39,8 +42,14 @@ export default async function Page({
 
 	if (!doctor) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	const { search, discharged, mechanical_ventilation, exitus_letalis } =
-		searchParams || {};
+	const {
+		page,
+		search,
+		discharged,
+		mechanical_ventilation,
+		exitus_letalis,
+		admission,
+	} = searchParams || {};
 
 	const conditions = [];
 
@@ -71,6 +80,23 @@ export default async function Page({
 			eq(patients.exitus_letalis, searchParams.exitus_letalis === 'true'),
 		);
 
+	if (admission) {
+		// @ts-ignore
+		const dates = admission.split(',').map((d) => fromUnixTime(Number(d))) as [
+			Date,
+			Date,
+		];
+
+		if (!admission[1]) {
+			console.log(dates[0]);
+			conditions.push(gte(patients.admission_date, dates[0]));
+		} else {
+			conditions.push(between(patients.admission_date, dates[0], dates[1]));
+
+			console.log(dates[0], dates[1]);
+		}
+	}
+
 	const filtered_patients = db
 		.select()
 		.from(patients)
@@ -80,7 +106,7 @@ export default async function Page({
 
 	const db_patients = await filtered_patients
 		.limit(row_limit)
-		.offset(!searchParams?.page ? 0 : searchParams.page * row_limit);
+		.offset(!page ? 0 : page * row_limit);
 
 	return (
 		<>

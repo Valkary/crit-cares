@@ -3,7 +3,12 @@ import { useDebounce } from '@uidotdev/usehooks';
 import { Input } from '@/components/ui/input';
 import { useEffect, useState } from 'react';
 import { Button } from '~/components/ui/button';
-import { ChevronLeftIcon, ChevronRightIcon, ListRestartIcon } from 'lucide-react';
+import {
+	CalendarIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	ListRestartIcon,
+} from 'lucide-react';
 import useQueryParams from '~/hooks/useQueryParams';
 import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
 import CreatePatientModalButton from './create_patient_button';
@@ -12,8 +17,16 @@ import {
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
-	SelectValue,
 } from '@/components/ui/select';
+import type { PatientSearchParams } from './page';
+import {
+	Popover,
+	PopoverTrigger,
+	PopoverContent,
+} from '@radix-ui/react-popover';
+import { Calendar } from '@/components/ui/calendar';
+import { getUnixTime } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
 
 export default function Filters({
 	page,
@@ -22,11 +35,37 @@ export default function Filters({
 	page: number;
 	total_pages: number;
 }) {
-	const [params, setParams] = useQueryParams();
+	const [params, setParams, setNamedParam] =
+		useQueryParams<PatientSearchParams>();
 	const [searchTerm, setSearchTerm] = useState(() => params.search ?? '');
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-	useEffect(() => setParams({ search: debouncedSearchTerm }), [debouncedSearchTerm]);
+	const [admissionDate, setAdmissionDate] = useState<DateRange | undefined>({
+		from: new Date(),
+	});
+
+	function updateDateValue(
+		type: 'admission' | 'discharge',
+		dates: DateRange | undefined,
+	) {
+		setAdmissionDate(dates);
+
+		if (!dates) return setNamedParam(type, undefined);
+
+		if (dates.from)
+			return setNamedParam(type, [
+				getUnixTime(dates.from),
+				dates.to ? getUnixTime(dates.to) : null,
+			]);
+
+		return;
+	}
+
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(
+		() => setParams({ search: debouncedSearchTerm }),
+		[debouncedSearchTerm],
+	);
 
 	return (
 		<TableHeader>
@@ -60,7 +99,7 @@ export default function Filters({
 								variant={'outline'}
 								onClick={() =>
 									setParams({
-										page: ((Number(params.page) || 0) - 1).toString(),
+										page: (Number(params.page) || 0) - 1,
 									})
 								}
 								disabled={page <= 0}
@@ -75,7 +114,7 @@ export default function Filters({
 								variant={'outline'}
 								onClick={() =>
 									setParams({
-										page: ((Number(params.page) || 0) + 1).toString(),
+										page: (Number(params.page) || 0) + 1,
 									})
 								}
 								disabled={page + 1 >= total_pages}
@@ -92,11 +131,40 @@ export default function Filters({
 				<TableHead>Apellidos</TableHead>
 				<TableHead>Edad</TableHead>
 				<TableHead>Teléfono</TableHead>
-				<TableHead>Admisión</TableHead>
+				<TableHead>
+					<Popover>
+						<PopoverTrigger asChild>
+							<Button
+								id="date"
+								variant={'outline'}
+								className="justify-start text-left font-normal"
+							>
+								<CalendarIcon className="mr-2 h-4 w-4" />
+								<span>Admisión</span>
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent
+							className="w-auto p-0 bg-background border border-border rounded-md shadow-lg mt-1"
+							align="start"
+						>
+							<Calendar
+								initialFocus
+								mode="range"
+								defaultMonth={admissionDate?.from}
+								selected={admissionDate}
+								onSelect={(dates) => updateDateValue('admission', dates)}
+								numberOfMonths={2}
+							/>
+						</PopoverContent>
+					</Popover>
+				</TableHead>
 				<TableHead>
 					<Select
 						onValueChange={(value) =>
-							setParams({ mechanical_ventilation: value })
+							setParams({
+								mechanical_ventilation:
+									value as PatientSearchParams['mechanical_ventilation'],
+							})
 						}
 						value={params?.mechanical_ventilation ?? 'todos'}
 					>
@@ -110,7 +178,11 @@ export default function Filters({
 				</TableHead>
 				<TableHead>
 					<Select
-						onValueChange={(value) => setParams({ exitus_letalis: value })}
+						onValueChange={(value) =>
+							setParams({
+								exitus_letalis: value as PatientSearchParams['exitus_letalis'],
+							})
+						}
 						value={params?.exitus_letalis ?? 'todos'}
 					>
 						<SelectTrigger>Exitus letalis</SelectTrigger>
@@ -123,7 +195,11 @@ export default function Filters({
 				</TableHead>
 				<TableHead>
 					<Select
-						onValueChange={(value) => setParams({ discharged: value })}
+						onValueChange={(value) =>
+							setParams({
+								discharged: value as PatientSearchParams['discharged'],
+							})
+						}
 						value={params?.discharged ?? 'todos'}
 					>
 						<SelectTrigger>Alta</SelectTrigger>
