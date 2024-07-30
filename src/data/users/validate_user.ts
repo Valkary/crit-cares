@@ -8,7 +8,9 @@ import { db } from '~/server/db';
 import { users } from '~/server/db/schema';
 import type { User } from '~/types';
 
-export async function validate_user_token(token: string) {
+export async function validate_user_token(token?: string) {
+	if (!token) return null;
+
 	const { email } = jwt.verify(token, env.JWT_SECRET) as User;
 	const doctor = (
 		await db.select().from(users).where(eq(users.email, email))

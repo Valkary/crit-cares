@@ -1,6 +1,6 @@
 'use server';
 
-import { type InferSelectModel, eq } from 'drizzle-orm';
+import { type InferSelectModel, and, eq, like, or } from 'drizzle-orm';
 import jwt from 'jsonwebtoken';
 import { env } from '~/env';
 import { db } from '~/server/db';
@@ -9,11 +9,17 @@ import type { FetchResult, User } from '~/types';
 
 export type PatientModel = InferSelectModel<typeof patients>;
 
+type PatientSearchParams = {
+	search?: string,
+	page?: number,
+}
+
 export async function get_doctor_patients(
 	token: string,
+	search_params: PatientSearchParams,
 ): Promise<FetchResult<PatientModel>> {
 	try {
-		const { email, role } = jwt.verify(token, env.JWT_SECRET) as User;
+		const { email } = jwt.verify(token, env.JWT_SECRET) as User;
 		const doctor = (
 			await db.select().from(users).where(eq(users.email, email))
 		)[0];
@@ -27,7 +33,17 @@ export async function get_doctor_patients(
 		const db_patients = await db
 			.select()
 			.from(patients)
-			.where(eq(patients.doctor_id, doctor.id));
+			.where(
+				and(
+					eq(patients.doctor_id, doctor.id),
+					or(
+						like(patients.names, `%${search_params?.search}%`),
+						like(patients.last_names, `%${search_params?.search}%`),
+						like(patients.phone, `%${search_params?.search}%`),
+						like(patients.age, `%${search_params?.search}%`),
+					)
+				)
+			).limit(10).offset(!search_params?.page ? 0 : search_params.page * 10);
 
 		return {
 			success: true,

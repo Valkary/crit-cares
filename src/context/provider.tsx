@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 import Modal from '~/components/ui/modal';
 import { Toaster } from '~/components/ui/toaster';
-import AuthContextProvider from '~/context/auth';
+import AuthContextProvider from './auth';
 import ModalContextProvider from './modal';
 import { ThemeProvider } from './theme';
 

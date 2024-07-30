@@ -13,18 +13,49 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import DetailPatient from '~/components/patients/detail_patient';
 import Drawer from '~/components/ui/drawer';
-import { get_doctor_patients } from '~/data/patients/get_patients';
 import CreatePatientModalButton from './create_patient_button';
+import Filters from './filters';
+import { validate_user_token } from '~/data/users/validate_user';
+import { db } from '~/server/db';
+import { and, eq, or, like } from 'drizzle-orm';
+import { patients } from '~/server/db/schema';
 
-export default async function Page() {
+export type PatientSearchParams = {
+	search?: string;
+	page?: number;
+};
+
+const row_limit = 5;
+
+export default async function Page({
+	searchParams,
+}: {
+	searchParams: PatientSearchParams;
+}) {
 	const token = cookies().get('token')?.value;
+	const doctor = await validate_user_token(token);
 
-	if (!token) return redirect('/login?toast=error&msg=Usuario no definido');
+	if (!doctor) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	const req = await get_doctor_patients(token);
+	const filtered_patients = db
+		.select()
+		.from(patients)
+		.where(
+			and(
+				eq(patients.doctor_id, doctor.id),
+				or(
+					like(patients.names, `%${searchParams?.search ?? ''}%`),
+					like(patients.last_names, `%${searchParams?.search ?? ''}%`),
+					like(patients.phone, `%${searchParams?.search ?? ''}%`),
+				),
+			),
+		);
 
-	if (!req.success) return <span>User error</span>;
-	const patients = req.data;
+	const total_pages = Math.ceil((await filtered_patients).length / row_limit);
+
+	const db_patients = await filtered_patients
+		.limit(row_limit)
+		.offset(!searchParams?.page ? 0 : searchParams.page * row_limit);
 
 	return (
 		<>
@@ -35,6 +66,11 @@ export default async function Page() {
 					<TableRow>
 						<TableHead colSpan={10}>
 							<CreatePatientModalButton />
+						</TableHead>
+					</TableRow>
+					<TableRow>
+						<TableHead colSpan={10}>
+							<Filters page={Number(searchParams?.page) || 0} total_pages={total_pages} />
 						</TableHead>
 					</TableRow>
 					<TableRow>
@@ -51,7 +87,7 @@ export default async function Page() {
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{patients.map((patient) => {
+					{db_patients.map((patient) => {
 						return (
 							<TableRow key={patient.id}>
 								<TableCell>
