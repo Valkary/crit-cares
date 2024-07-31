@@ -121,8 +121,7 @@ export default function Filters({
 							<DropdownMenuContent>
 								<DropdownMenuLabel>Eliminar filtros</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem
-									onClick={() => setParams({})}>
+								<DropdownMenuItem onClick={() => setParams({})}>
 									<TrashIcon className="mr-2 h-4 w-4" />
 									<span>Todos</span>
 								</DropdownMenuItem>
@@ -133,37 +132,31 @@ export default function Filters({
 										deleteNamedParam('admission_to');
 									}}
 								>
-									{
-										params.admission_from &&
+									{params.admission_from && (
 										<CheckIcon className="mr-2 h-4 w-4" />
-									}
+									)}
 									<span>Fecha de admisión</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem
 									onClick={() => deleteNamedParam('mechanical_ventilation')}
 								>
-									{
-										params.mechanical_ventilation &&
+									{params.mechanical_ventilation && (
 										<CheckIcon className="mr-2 h-4 w-4" />
-									}
+									)}
 									<span>Ventilación</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem
 									onClick={() => deleteNamedParam('exitus_letalis')}
 								>
-									{
-										params.exitus_letalis &&
+									{params.exitus_letalis && (
 										<CheckIcon className="mr-2 h-4 w-4" />
-									}
+									)}
 									<span>Exitus letalis</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem
 									onClick={() => deleteNamedParam('discharged')}
 								>
-									{
-										params.discharged &&
-										<CheckIcon className="mr-2 h-4 w-4" />
-									}
+									{params.discharged && <CheckIcon className="mr-2 h-4 w-4" />}
 									<span>Dado de alta</span>
 								</DropdownMenuItem>
 								<DropdownMenuItem
@@ -172,10 +165,9 @@ export default function Filters({
 										deleteNamedParam('discharged_to');
 									}}
 								>
-									{
-										params.discharged_from &&
+									{params.discharged_from && (
 										<CheckIcon className="mr-2 h-4 w-4" />
-									}
+									)}
 									<span>Fecha de alta</span>
 								</DropdownMenuItem>
 							</DropdownMenuContent>

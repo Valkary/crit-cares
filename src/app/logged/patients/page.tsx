@@ -115,43 +115,40 @@ export default async function Page({
 		.offset(!page ? 0 : page * row_limit);
 
 	return (
-		<>
-			<h1 className="text-2xl font-bold text-primary uppercase">Pacientes</h1>
-			<Table>
-				<TableCaption>Tabla de pacientes</TableCaption>
-				<Filters
-					page={Number(searchParams?.page) || 0}
-					total_pages={total_pages}
-				/>
-				<TableBody>
-					{db_patients.map((patient) => {
-						return (
-							<TableRow key={patient.id}>
-								<TableCell>
-									<Drawer trigger={<InfoIcon />} title="Perfil del Paciente">
-										<DetailPatient patient_data={patient} />
-									</Drawer>
-								</TableCell>
-								<TableCell>{patient.names}</TableCell>
-								<TableCell>{patient.last_names}</TableCell>
-								<TableCell>{patient.age}</TableCell>
-								<TableCell>{patient.phone}</TableCell>
-								<TableCell>
-									{patient.admission_date.toLocaleDateString('es-Mx')}
-								</TableCell>
-								<TableCell>
-									{patient.mechanical_ventilation ? 'Si' : 'No'}
-								</TableCell>
-								<TableCell>{patient.exitus_letalis ? 'Si' : 'No'}</TableCell>
-								<TableCell>{patient.discharged ? 'Si' : 'No'}</TableCell>
-								<TableCell>
-									{patient.discharge_date?.toISOString() ?? '-'}
-								</TableCell>
-							</TableRow>
-						);
-					})}
-				</TableBody>
-			</Table>
-		</>
+		<Table>
+			<TableCaption>Tabla de pacientes</TableCaption>
+			<Filters
+				page={Number(searchParams?.page) || 0}
+				total_pages={total_pages}
+			/>
+			<TableBody>
+				{db_patients.map((patient) => {
+					return (
+						<TableRow key={patient.id}>
+							<TableCell>
+								<Drawer trigger={<InfoIcon />} title="Perfil del Paciente">
+									<DetailPatient patient_data={patient} />
+								</Drawer>
+							</TableCell>
+							<TableCell>{patient.names}</TableCell>
+							<TableCell>{patient.last_names}</TableCell>
+							<TableCell>{patient.age}</TableCell>
+							<TableCell>{patient.phone}</TableCell>
+							<TableCell>
+								{patient.admission_date.toLocaleDateString('es-Mx')}
+							</TableCell>
+							<TableCell>
+								{patient.mechanical_ventilation ? 'Si' : 'No'}
+							</TableCell>
+							<TableCell>{patient.exitus_letalis ? 'Si' : 'No'}</TableCell>
+							<TableCell>{patient.discharged ? 'Si' : 'No'}</TableCell>
+							<TableCell>
+								{patient.discharge_date?.toISOString() ?? '-'}
+							</TableCell>
+						</TableRow>
+					);
+				})}
+			</TableBody>
+		</Table>
 	);
 }

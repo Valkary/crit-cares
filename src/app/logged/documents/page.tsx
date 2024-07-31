@@ -39,35 +39,32 @@ export default async function Page() {
 		);
 
 	return (
-		<>
-			<h1 className="text-2xl font-bold text-primary uppercase">Documentos</h1>
-			<Table>
-				<TableCaption>Tabla de documentos</TableCaption>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Paciente</TableHead>
-						<TableHead>Documento</TableHead>
-						<TableHead>Fecha</TableHead>
-						<TableHead>Ver</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{documents.map((doc) => {
-						return (
-							<TableRow key={doc.file.id}>
-								<TableCell>{doc.patient_name}</TableCell>
-								<TableCell>{doc.file.name}</TableCell>
-								<TableCell>
-									{doc.file.creation_date?.toLocaleDateString('es-Mx')}
-								</TableCell>
-								<TableCell>
-									<ViewFileButton file={doc.file} />
-								</TableCell>
-							</TableRow>
-						);
-					})}
-				</TableBody>
-			</Table>
-		</>
+		<Table>
+			<TableCaption>Tabla de documentos</TableCaption>
+			<TableHeader>
+				<TableRow>
+					<TableHead>Paciente</TableHead>
+					<TableHead>Documento</TableHead>
+					<TableHead>Fecha</TableHead>
+					<TableHead>Ver</TableHead>
+				</TableRow>
+			</TableHeader>
+			<TableBody>
+				{documents.map((doc) => {
+					return (
+						<TableRow key={doc.file.id}>
+							<TableCell>{doc.patient_name}</TableCell>
+							<TableCell>{doc.file.name}</TableCell>
+							<TableCell>
+								{doc.file.creation_date?.toLocaleDateString('es-Mx')}
+							</TableCell>
+							<TableCell>
+								<ViewFileButton file={doc.file} />
+							</TableCell>
+						</TableRow>
+					);
+				})}
+			</TableBody>
+		</Table>
 	);
 }

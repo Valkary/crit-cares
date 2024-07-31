@@ -14,6 +14,10 @@ export default function Header({
 }: { routes: Route[]; user: User }) {
 	const path = usePathname();
 
+	function getRouteTitle(): string {
+		return routes.find(r => path.includes(r.url))?.title as string;
+	}
+
 	return (
 		<header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
 			<Sheet>
@@ -45,7 +49,8 @@ export default function Header({
 					</nav>
 				</SheetContent>
 			</Sheet>
-			<div className="flex w-full justify-end">
+			<div className="flex w-full items-center justify-between">
+				<h1 className="text-3xl font-bold text-primary uppercase">{getRouteTitle()}</h1>
 				<UserDropdownMenu user={user} />
 			</div>
 		</header>

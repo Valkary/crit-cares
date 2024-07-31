@@ -8,11 +8,5 @@ export default async function Page() {
 
 	if (!token) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	return (
-		<>
-			<h1 className="text-2xl font-bold text-primary uppercase">
-				Equipo Médico
-			</h1>
-		</>
-	);
+	return <></>;
 }
