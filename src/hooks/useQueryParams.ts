@@ -48,5 +48,13 @@ export default function useQueryParams<T extends WithPage>() {
 		});
 	}
 
-	return [queryParams, updateParams, updateNamedParam] as const;
+	function deleteNamedParam<K extends keyof T>(param: K) {
+		setQueryParams((prev) => {
+			const newParams = prev;
+			delete(newParams[param]);
+			return newParams;
+		});
+	}
+
+	return [queryParams, updateParams, updateNamedParam, deleteNamedParam] as const;
 }

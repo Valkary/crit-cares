@@ -4,8 +4,6 @@ import {
 	TableBody,
 	TableCaption,
 	TableCell,
-	TableHead,
-	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
 import { InfoIcon } from 'lucide-react';
@@ -19,18 +17,23 @@ import { db } from '~/server/db';
 import { and, eq, or, like, between, gte } from 'drizzle-orm';
 import { patients } from '~/server/db/schema';
 import { fromUnixTime } from 'date-fns';
+import { z } from 'zod';
 
-export type PatientSearchParams = {
-	search?: string;
-	page?: number;
-	exitus_letalis?: 'todos' | 'true' | 'false';
-	mechanical_ventilation?: 'todos' | 'true' | 'false';
-	discharged?: 'todos' | 'true' | 'false';
-	admission?: [number, number] | [number, null];
-	discharge?: [number, number] | [number, null];
-};
+const patient_search_schema = z.object({
+	search: z.string().optional(),
+	page: z.coerce.number().optional(),
+	exitus_letalis: z.enum(['todos', 'true', 'false']).optional(),
+	mechanical_ventilation: z.enum(['todos', 'true', 'false']).optional(),
+	discharged: z.enum(['todos', 'true', 'false']).optional(),
+	admission_from: z.coerce.number().optional(),
+	admission_to: z.coerce.number().optional(),
+	discharged_from: z.coerce.number().optional(),
+	discharged_to: z.coerce.number().optional(),
+});
 
-const row_limit = 5;
+export type PatientSearchParams = z.infer<typeof patient_search_schema>;
+
+const row_limit = 10;
 
 export default async function Page({
 	searchParams,
@@ -48,54 +51,64 @@ export default async function Page({
 		discharged,
 		mechanical_ventilation,
 		exitus_letalis,
-		admission,
-	} = searchParams || {};
+		admission_from,
+		admission_to,
+		discharged_from,
+		discharged_to,
+	} = searchParams;
 
 	const conditions = [];
 
 	if (search)
 		conditions.push(
 			or(
-				like(patients.names, `%${searchParams?.search ?? ''}%`),
-				like(patients.last_names, `%${searchParams?.search ?? ''}%`),
-				like(patients.phone, `%${searchParams?.search ?? ''}%`),
+				like(patients.names, `%${search ?? ''}%`),
+				like(patients.last_names, `%${search ?? ''}%`),
+				like(patients.phone, `%${search ?? ''}%`),
 			),
 		);
 
 	if (discharged && discharged !== 'todos')
 		conditions.push(
-			eq(patients.discharged, searchParams.discharged === 'true'),
+			eq(patients.discharged, discharged === 'true'),
 		);
 
 	if (mechanical_ventilation && mechanical_ventilation !== 'todos')
 		conditions.push(
 			eq(
 				patients.mechanical_ventilation,
-				searchParams.mechanical_ventilation === 'true',
+				mechanical_ventilation === 'true',
 			),
 		);
 
 	if (exitus_letalis && exitus_letalis !== 'todos')
 		conditions.push(
-			eq(patients.exitus_letalis, searchParams.exitus_letalis === 'true'),
+			eq(patients.exitus_letalis, exitus_letalis === 'true'),
 		);
 
-	if (admission) {
-		// @ts-ignore
-		const dates = admission.split(',').map((d) => fromUnixTime(Number(d))) as [
-			Date,
-			Date,
-		];
+	if (admission_from && admission_to)
+		conditions.push(
+			between(
+				patients.admission_date,
+				fromUnixTime(admission_from),
+				fromUnixTime(admission_to),
+			),
+		);
+	else if (admission_from)
+		conditions.push(gte(patients.admission_date, fromUnixTime(admission_from)));
 
-		if (!admission[1]) {
-			console.log(dates[0]);
-			conditions.push(gte(patients.admission_date, dates[0]));
-		} else {
-			conditions.push(between(patients.admission_date, dates[0], dates[1]));
-
-			console.log(dates[0], dates[1]);
-		}
-	}
+	if (discharged_from && discharged_to)
+		conditions.push(
+			between(
+				patients.discharge_date,
+				fromUnixTime(discharged_from),
+				fromUnixTime(discharged_to),
+			),
+		);
+	else if (discharged_from)
+		conditions.push(
+			gte(patients.discharge_date, fromUnixTime(discharged_from)),
+		);
 
 	const filtered_patients = db
 		.select()

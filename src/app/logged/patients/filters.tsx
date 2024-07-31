@@ -25,7 +25,7 @@ import {
 	PopoverContent,
 } from '@radix-ui/react-popover';
 import { Calendar } from '@/components/ui/calendar';
-import { getUnixTime } from 'date-fns';
+import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
 
 export default function Filters({
@@ -35,28 +35,44 @@ export default function Filters({
 	page: number;
 	total_pages: number;
 }) {
-	const [params, setParams, setNamedParam] =
+	const [params, setParams, setNamedParam, deleteNamedParam] =
 		useQueryParams<PatientSearchParams>();
 	const [searchTerm, setSearchTerm] = useState(() => params.search ?? '');
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 	const [admissionDate, setAdmissionDate] = useState<DateRange | undefined>({
 		from: new Date(),
+		to: addDays(new Date(), 7),
+	});
+
+	const [dischargeDate, setDischargeDate] = useState<DateRange | undefined>({
+		from: new Date(),
+		to: addDays(new Date(), 7),
 	});
 
 	function updateDateValue(
 		type: 'admission' | 'discharge',
 		dates: DateRange | undefined,
 	) {
-		setAdmissionDate(dates);
+		if (type === 'admission') {
+			setAdmissionDate(dates);
+			dates?.from
+				? setNamedParam('admission_from', getUnixTime(dates.from))
+				: deleteNamedParam('admission_from');
 
-		if (!dates) return setNamedParam(type, undefined);
+			dates?.to
+				? setNamedParam('admission_to', getUnixTime(dates.to))
+				: deleteNamedParam('admission_to');
+		} else {
+			setDischargeDate(dates);
+			dates?.from
+				? setNamedParam('discharged_from', getUnixTime(dates.from))
+				: deleteNamedParam('discharged_from');
 
-		if (dates.from)
-			return setNamedParam(type, [
-				getUnixTime(dates.from),
-				dates.to ? getUnixTime(dates.to) : null,
-			]);
+			dates?.to
+				? setNamedParam('discharged_to', getUnixTime(dates.to))
+				: deleteNamedParam('discharged_to');
+		}
 
 		return;
 	}
@@ -77,11 +93,12 @@ export default function Filters({
 			<TableRow>
 				<TableHead colSpan={10}>
 					<div className="flex items-center gap-2">
+						<span>Busqueda: </span>
 						<Input
 							value={searchTerm}
 							onChange={(e) => setSearchTerm(e.currentTarget.value)}
 							type="text"
-							placeholder="Busqueda..."
+							placeholder="nombres, apellidos, teléfonos..."
 							className="flex-grow"
 						/>
 
@@ -202,7 +219,7 @@ export default function Filters({
 						}
 						value={params?.discharged ?? 'todos'}
 					>
-						<SelectTrigger>Alta</SelectTrigger>
+						<SelectTrigger>Dado de alta</SelectTrigger>
 						<SelectContent>
 							<SelectItem value="todos">Todos</SelectItem>
 							<SelectItem value="true">Si</SelectItem>
@@ -210,7 +227,33 @@ export default function Filters({
 						</SelectContent>
 					</Select>
 				</TableHead>
-				<TableHead>Fecha alta</TableHead>
+				<TableHead>
+					<Popover>
+						<PopoverTrigger asChild>
+							<Button
+								id="date"
+								variant={'outline'}
+								className="justify-start text-left font-normal"
+							>
+								<CalendarIcon className="mr-2 h-4 w-4" />
+								<span>Alta</span>
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent
+							className="w-auto p-0 bg-background border border-border rounded-md shadow-lg mt-1"
+							align="start"
+						>
+							<Calendar
+								initialFocus
+								mode="range"
+								defaultMonth={dischargeDate?.from}
+								selected={dischargeDate}
+								onSelect={(dates) => updateDateValue('discharge', dates)}
+								numberOfMonths={2}
+							/>
+						</PopoverContent>
+					</Popover>
+				</TableHead>
 			</TableRow>
 		</TableHeader>
 	);
