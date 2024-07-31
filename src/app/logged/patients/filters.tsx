@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react';
 import { Button } from '~/components/ui/button';
 import {
 	CalendarIcon,
+	CheckIcon,
 	ChevronLeftIcon,
 	ChevronRightIcon,
 	ListRestartIcon,
+	TrashIcon,
 } from 'lucide-react';
 import useQueryParams from '~/hooks/useQueryParams';
 import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
@@ -24,6 +26,14 @@ import {
 	PopoverTrigger,
 	PopoverContent,
 } from '@radix-ui/react-popover';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Calendar } from '@/components/ui/calendar';
 import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
 import type { DateRange } from 'react-day-picker';
@@ -102,13 +112,74 @@ export default function Filters({
 							className="flex-grow"
 						/>
 
-						<Button
-							type="button"
-							variant={'destructive'}
-							onClick={() => setParams({})}
-						>
-							<ListRestartIcon />
-						</Button>
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="destructive">
+									<ListRestartIcon />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent>
+								<DropdownMenuLabel>Eliminar filtros</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem
+									onClick={() => setParams({})}>
+									<TrashIcon className="mr-2 h-4 w-4" />
+									<span>Todos</span>
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem
+									onClick={() => {
+										deleteNamedParam('admission_from');
+										deleteNamedParam('admission_to');
+									}}
+								>
+									{
+										params.admission_from &&
+										<CheckIcon className="mr-2 h-4 w-4" />
+									}
+									<span>Fecha de admisión</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => deleteNamedParam('mechanical_ventilation')}
+								>
+									{
+										params.mechanical_ventilation &&
+										<CheckIcon className="mr-2 h-4 w-4" />
+									}
+									<span>Ventilación</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => deleteNamedParam('exitus_letalis')}
+								>
+									{
+										params.exitus_letalis &&
+										<CheckIcon className="mr-2 h-4 w-4" />
+									}
+									<span>Exitus letalis</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => deleteNamedParam('discharged')}
+								>
+									{
+										params.discharged &&
+										<CheckIcon className="mr-2 h-4 w-4" />
+									}
+									<span>Dado de alta</span>
+								</DropdownMenuItem>
+								<DropdownMenuItem
+									onClick={() => {
+										deleteNamedParam('discharged_from');
+										deleteNamedParam('discharged_to');
+									}}
+								>
+									{
+										params.discharged_from &&
+										<CheckIcon className="mr-2 h-4 w-4" />
+									}
+									<span>Fecha de alta</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
 
 						<div className="flex">
 							<Button

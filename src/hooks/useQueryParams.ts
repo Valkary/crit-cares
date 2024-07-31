@@ -19,6 +19,7 @@ export default function useQueryParams<T extends WithPage>() {
 	});
 
 	useEffect(() => {
+		console.log('here')
 		const queryString = new URLSearchParams(
 			queryParams as Record<string, string>,
 		).toString();
@@ -49,12 +50,15 @@ export default function useQueryParams<T extends WithPage>() {
 	}
 
 	function deleteNamedParam<K extends keyof T>(param: K) {
-		setQueryParams((prev) => {
-			const newParams = prev;
-			delete(newParams[param]);
-			return newParams;
-		});
+		setQueryParams((prev) => ({ ...prev, [param]: '' }));
 	}
 
-	return [queryParams, updateParams, updateNamedParam, deleteNamedParam] as const;
+	console.log(queryParams);
+
+	return [
+		queryParams,
+		updateParams,
+		updateNamedParam,
+		deleteNamedParam,
+	] as const;
 }

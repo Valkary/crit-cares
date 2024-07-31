@@ -69,22 +69,15 @@ export default async function Page({
 		);
 
 	if (discharged && discharged !== 'todos')
-		conditions.push(
-			eq(patients.discharged, discharged === 'true'),
-		);
+		conditions.push(eq(patients.discharged, discharged === 'true'));
 
 	if (mechanical_ventilation && mechanical_ventilation !== 'todos')
 		conditions.push(
-			eq(
-				patients.mechanical_ventilation,
-				mechanical_ventilation === 'true',
-			),
+			eq(patients.mechanical_ventilation, mechanical_ventilation === 'true'),
 		);
 
 	if (exitus_letalis && exitus_letalis !== 'todos')
-		conditions.push(
-			eq(patients.exitus_letalis, exitus_letalis === 'true'),
-		);
+		conditions.push(eq(patients.exitus_letalis, exitus_letalis === 'true'));
 
 	if (admission_from && admission_to)
 		conditions.push(
