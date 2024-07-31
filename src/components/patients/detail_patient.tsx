@@ -25,10 +25,6 @@ export default async function DetailPatient({ patient_data }: Props) {
 		<div className="w-full flex flex-col gap-2">
 			<EditPatient patient_data={patient_data} />
 
-			<h3 className="text-xl font-semibold text-primary mb-4">
-				Notas de seguimiento
-			</h3>
-
 			<Tabs defaultValue="notes" className="w-full">
 				<TabsList className="grid w-full grid-cols-2">
 					<TabsTrigger value="notes">Notas de seguimiento</TabsTrigger>

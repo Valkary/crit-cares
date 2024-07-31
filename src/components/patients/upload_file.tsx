@@ -94,7 +94,7 @@ export default function UploadFile({ token, patient_id }: Props) {
 					name="file_name"
 					render={({ field }) => (
 						<FormItem>
-							<FormLabel>Correo eletrónico</FormLabel>
+							<FormLabel>Nombre del archivo</FormLabel>
 							<FormControl>
 								<Input type="text" placeholder="Nombre a guardar" {...field} />
 							</FormControl>

@@ -1,5 +1,5 @@
 'use server';
-import { FileIcon, StethoscopeIcon, UsersIcon } from 'lucide-react';
+import { FileIcon, PieChartIcon, StethoscopeIcon, UsersIcon } from 'lucide-react';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { get_user_creds } from '~/data/users/login';
@@ -27,6 +27,11 @@ const routes: Route[] = [
 		title: 'Equipo Médico',
 		url: '/logged/equipment',
 		icon: <StethoscopeIcon className="h-4 w-4" />,
+	},
+	{
+		title: 'Reportes',
+		url: '/logged/analytics',
+		icon: <PieChartIcon className="h-4 w-4" />,
 	},
 ];
 

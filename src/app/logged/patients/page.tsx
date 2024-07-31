@@ -143,7 +143,7 @@ export default async function Page({
 							<TableCell>{patient.exitus_letalis ? 'Si' : 'No'}</TableCell>
 							<TableCell>{patient.discharged ? 'Si' : 'No'}</TableCell>
 							<TableCell>
-								{patient.discharge_date?.toISOString() ?? '-'}
+								{patient.discharge_date?.toLocaleDateString('es-Mx') ?? '-'}
 							</TableCell>
 						</TableRow>
 					);
