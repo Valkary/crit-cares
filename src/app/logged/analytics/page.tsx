@@ -9,77 +9,53 @@ import { patients } from '~/server/db/schema';
 import { gte, sql } from 'drizzle-orm';
 import { addMonths } from 'date-fns';
 
-type WithDate = { month: string };
-type Admissions = { admissions: number };
-type Discharges = { discharges: number };
-
-function merge_objects_by_date(
-	obj1: (Admissions & WithDate)[],
-	obj2: (Discharges & WithDate)[],
-) {
-	const merged_object: (WithDate & Admissions & Discharges)[] = [];
-
-	for (const admission of obj1) {
-		merged_object.push({ ...admission, discharges: 0 });
-	}
-
-	for (const discharge of obj2) {
-		const id = merged_object.findIndex((obj) => obj.month === discharge.month);
-
-		if (merged_object[id]) {
-			merged_object[id].discharges += discharge.discharges;
-		} else {
-			merged_object.push({ ...discharge, admissions: 0 });
-		}
-	}
-
-	const sorted = merged_object.sort(
-		(a, b) => new Date(a.month).getTime() - new Date(b.month).getTime(),
-	);
-	return sorted;
-}
-
 export default async function Page() {
 	const token = cookies().get('token')?.value;
 	const doctor = await validate_user_token(token);
 
 	if (!doctor) return redirect('/login?toast=error&msg=Usuario no definido');
 
-	const monthlyAdmissions = await db
+	const from_date = addMonths(new Date(), -12);
+
+	const monthly_admissions = db
 		.select({
 			month:
 				sql<string>`strftime('%Y-%m', datetime(${patients.admission_date}, 'unixepoch'))`.as(
 					'month',
 				),
-			admissions: sql<number>`COUNT(*)`,
+			admissions: sql<number>`COUNT(*)`.as('admissions'),
 		})
 		.from(patients)
-		.where(gte(patients.admission_date, addMonths(new Date(), -12)))
+		.where(gte(patients.admission_date, from_date))
 		.groupBy(
 			sql`strftime('%Y-%m', datetime(${patients.admission_date}, 'unixepoch'))`,
 		)
-		.orderBy(
-			sql`strftime('%Y-%m', datetime(${patients.admission_date}, 'unixepoch'))`,
-		);
+		.as('a');
 
-	const monthlyDischarges = await db
+	const monthly_discharges = db
 		.select({
 			month:
 				sql<string>`strftime('%Y-%m', datetime(${patients.discharge_date}, 'unixepoch'))`.as(
 					'month',
 				),
-			discharges: sql<number>`COUNT(*)`,
+			discharges: sql<number>`COUNT(*)`.as('discharges'),
 		})
 		.from(patients)
-		.where(gte(patients.discharge_date, addMonths(new Date(), -12)))
+		.where(gte(patients.discharge_date, from_date))
 		.groupBy(
 			sql`strftime('%Y-%m', datetime(${patients.discharge_date}, 'unixepoch'))`,
 		)
-		.orderBy(
-			sql`strftime('%Y-%m', datetime(${patients.discharge_date}, 'unixepoch'))`,
-		);
+		.as('d');
 
-	const monthlyData = merge_objects_by_date(monthlyAdmissions, monthlyDischarges);
+	const monthly_data = await db
+		.select({
+			month: sql<string>`COALESCE(a.month, d.month)`.as('month'),
+			admissions: sql<number>`COALESCE(a.admissions, 0)`.as('admissions'),
+			discharges: sql<number>`COALESCE(d.discharges, 0)`.as('discharges'),
+		})
+		.from(monthly_admissions)
+		.fullJoin(monthly_discharges, sql`a.month = d.month`)
+		.orderBy(sql`month`);
 
-	return <PatientAnalytics chart_data={monthlyData} />;
+	return <PatientAnalytics chart_data={monthly_data} />;
 }
