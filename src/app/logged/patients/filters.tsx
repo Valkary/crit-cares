@@ -47,7 +47,7 @@ export default function Filters({
 }) {
 	const [params, setParams, setNamedParam, deleteNamedParam] =
 		useQueryParams<PatientSearchParams>();
-	const [searchTerm, setSearchTerm] = useState(() => params.search ?? '');
+	const [searchTerm, setSearchTerm] = useState(params.search ?? '');
 	const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
 	const [admissionDate, setAdmissionDate] = useState<DateRange | undefined>({

@@ -65,9 +65,9 @@ export default function Page() {
 			<Card className="w-full max-w-sm sm:max-w-2xl">
 				<CardHeader>
 					<CardTitle className="text-2xl font-semibold text-primary text-center">
-						Registrar
+						Iniciar sesión
 					</CardTitle>
-					<CardDescription>Bienvenid@ a Crit Care</CardDescription>
+					<CardDescription>Bienvenid@ a Crit Cares</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<Form {...form}>
