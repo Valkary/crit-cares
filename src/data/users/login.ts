@@ -100,13 +100,13 @@ export async function get_user_creds(): Promise<
 		};
 
 	try {
-		const user = jwt.verify(token, env.JWT_SECRET) as Omit<User, "token">;
+		const user = jwt.verify(token, env.JWT_SECRET) as Omit<User, 'token'>;
 		return {
 			success: true,
 			user: {
 				...user,
-				token
-			}
+				token,
+			},
 		};
 	} catch (err) {
 		console.error(err);

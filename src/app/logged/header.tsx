@@ -15,7 +15,7 @@ export default function Header({
 	const path = usePathname();
 
 	function getRouteTitle(): string {
-		return routes.find(r => path.includes(r.url))?.title as string;
+		return routes.find((r) => path.includes(r.url))?.title as string;
 	}
 
 	return (
@@ -50,7 +50,9 @@ export default function Header({
 				</SheetContent>
 			</Sheet>
 			<div className="flex w-full items-center justify-between">
-				<h1 className="text-3xl font-bold text-primary uppercase">{getRouteTitle()}</h1>
+				<h1 className="text-3xl font-bold text-primary uppercase">
+					{getRouteTitle()}
+				</h1>
 				<UserDropdownMenu user={user} />
 			</div>
 		</header>

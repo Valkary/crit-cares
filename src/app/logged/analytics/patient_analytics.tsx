@@ -1,5 +1,4 @@
 'use client';
-import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import {
 	type ChartConfig,
 	ChartContainer,
@@ -8,11 +7,12 @@ import {
 	ChartTooltip,
 	ChartTooltipContent,
 } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, XAxis } from 'recharts';
 import {
 	Card,
+	CardDescription,
 	CardHeader,
 	CardTitle,
-	CardDescription,
 } from '~/components/ui/card';
 
 const chartConfig = {

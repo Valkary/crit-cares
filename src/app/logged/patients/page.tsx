@@ -6,18 +6,18 @@ import {
 	TableCell,
 	TableRow,
 } from '@/components/ui/table';
+import { fromUnixTime } from 'date-fns';
+import { and, between, eq, gte, like, or } from 'drizzle-orm';
 import { InfoIcon } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import DetailPatient from '~/components/patients/detail_patient';
 import Drawer from '~/components/ui/drawer';
-import Filters from './filters';
 import { validate_user_token } from '~/data/users/validate_user';
 import { db } from '~/server/db';
-import { and, eq, or, like, between, gte } from 'drizzle-orm';
 import { patients } from '~/server/db/schema';
-import { fromUnixTime } from 'date-fns';
-import { z } from 'zod';
+import Filters from './filters';
 
 const patient_search_schema = z.object({
 	search: z.string().optional(),

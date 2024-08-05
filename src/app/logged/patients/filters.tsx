@@ -1,31 +1,5 @@
 'use client';
-import { useDebounce } from '@uidotdev/usehooks';
-import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { Button } from '~/components/ui/button';
-import {
-	CalendarIcon,
-	CheckIcon,
-	ChevronLeftIcon,
-	ChevronRightIcon,
-	ListRestartIcon,
-	TrashIcon,
-} from 'lucide-react';
-import useQueryParams from '~/hooks/useQueryParams';
-import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import CreatePatientModalButton from './create_patient_button';
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-} from '@/components/ui/select';
-import type { PatientSearchParams } from './page';
-import {
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-} from '@radix-ui/react-popover';
+import { Calendar } from '@/components/ui/calendar';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -34,9 +8,35 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Calendar } from '@/components/ui/calendar';
-import { addDays, fromUnixTime, getUnixTime } from 'date-fns';
+import { Input } from '@/components/ui/input';
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+} from '@/components/ui/select';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@radix-ui/react-popover';
+import { useDebounce } from '@uidotdev/usehooks';
+import { addDays, getUnixTime } from 'date-fns';
+import {
+	CalendarIcon,
+	CheckIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	ListRestartIcon,
+	TrashIcon,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
+import { Button } from '~/components/ui/button';
+import { TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import useQueryParams from '~/hooks/useQueryParams';
+import CreatePatientModalButton from './create_patient_button';
+import type { PatientSearchParams } from './page';
 
 export default function Filters({
 	page,
@@ -92,6 +92,8 @@ export default function Filters({
 		() => setParams({ search: debouncedSearchTerm }),
 		[debouncedSearchTerm],
 	);
+
+	useEffect(() => setSearchTerm(params.search ?? ''), [params.search]);
 
 	return (
 		<TableHeader>

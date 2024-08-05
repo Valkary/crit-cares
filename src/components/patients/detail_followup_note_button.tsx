@@ -1,12 +1,11 @@
 'use client';
+import { useQuery } from '@tanstack/react-query';
 import { FolderSearch, LoaderCircleIcon, XIcon } from 'lucide-react';
 import { useModalContext } from '~/context/modal';
 import type { FollowupNoteModel } from '~/data/followup_notes/get_followup_notes';
 import DetailFollowupNote from './detail_followup_note';
-import { useQuery } from '@tanstack/react-query';
 
 type Props = { patient_id: number; note: FollowupNoteModel };
-
 
 export default function DetailFollowupNoteButton({ note }: Props) {
 	const { showModal } = useModalContext();
@@ -15,7 +14,6 @@ export default function DetailFollowupNoteButton({ note }: Props) {
 		queryKey: ['patient_file', note.id],
 		queryFn: () => DetailFollowupNote({ note_id: note.id }),
 	});
-
 
 	function openModal() {
 		showModal({

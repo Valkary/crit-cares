@@ -6,7 +6,10 @@ import { env } from '~/env';
 import { db } from '~/server/db';
 import { patients, users } from '~/server/db/schema';
 import type { CreationResult, User } from '~/types';
-import { type RegisterPatientSchema, register_patient_schema } from '../schemas';
+import {
+	type RegisterPatientSchema,
+	register_patient_schema,
+} from '../schemas';
 
 export async function registerPatient(
 	patient: RegisterPatientSchema,

@@ -1,6 +1,6 @@
-import { fromUnixTime } from 'date-fns';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { fromUnixTime } from 'date-fns';
 import { db } from '~/server/db';
 import { patients } from '~/server/db/schema';
 
@@ -17,14 +17,14 @@ async function insertPatients() {
 		const new_mock_data: NewPatient[] = [];
 
 		for (const p of mock_data) {
-      new_mock_data.push({
-        ...p,
+			new_mock_data.push({
+				...p,
 				phone: Number(p.phone),
-        // @ts-ignore
+				// @ts-ignore
 				admission_date: fromUnixTime(p.admission_date),
-        // @ts-ignore
+				// @ts-ignore
 				discharge_date: fromUnixTime(p.discharge_date),
-        // @ts-ignore
+				// @ts-ignore
 				creation_date: fromUnixTime(p.creation_date),
 			});
 		}
@@ -39,6 +39,6 @@ async function insertPatients() {
 }
 
 export async function GET(request: Request) {
-  insertPatients();
+	insertPatients();
 	return Response.json({ success: true });
 }

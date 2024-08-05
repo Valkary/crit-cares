@@ -1,5 +1,5 @@
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 type WithPage = {
 	page?: number;

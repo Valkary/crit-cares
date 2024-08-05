@@ -1,8 +1,26 @@
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from '@radix-ui/react-popover';
+import { useMutation } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { CalendarIcon, CheckIcon, LoaderCircle, XIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useAuth } from '~/context/auth';
+import { useModalContext } from '~/context/modal';
+import { registerPatient } from '~/data/patients/register';
+import {
+	type RegisterPatientSchema,
+	register_patient_schema,
+} from '~/data/schemas';
+import { cn } from '~/lib/utils';
+import { Button } from '../ui/button';
+import { Calendar } from '../ui/calendar';
+import { Checkbox } from '../ui/checkbox';
 import {
 	Form,
 	FormControl,
@@ -12,25 +30,7 @@ import {
 	FormMessage,
 } from '../ui/form';
 import { Input } from '../ui/input';
-import {
-	Popover,
-	PopoverTrigger,
-	PopoverContent,
-} from '@radix-ui/react-popover';
-import { CalendarIcon, CheckIcon, LoaderCircle, XIcon } from 'lucide-react';
-import { cn } from '~/lib/utils';
-import { Button } from '../ui/button';
-import { Calendar } from '../ui/calendar';
-import { format } from 'date-fns';
-import { Checkbox } from '../ui/checkbox';
-import {
-	type RegisterPatientSchema,
-	register_patient_schema,
-} from '~/data/schemas';
-import { useMutation } from '@tanstack/react-query';
-import { registerPatient } from '~/data/patients/register';
 import { useToast } from '../ui/use-toast';
-import { useModalContext } from '~/context/modal';
 
 export default function CreatePatient() {
 	const { user } = useAuth();

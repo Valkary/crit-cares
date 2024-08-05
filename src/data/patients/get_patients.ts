@@ -10,9 +10,9 @@ import type { FetchResult, User } from '~/types';
 export type PatientModel = InferSelectModel<typeof patients>;
 
 type PatientSearchParams = {
-	search?: string,
-	page?: number,
-}
+	search?: string;
+	page?: number;
+};
 
 export async function get_doctor_patients(
 	token: string,
@@ -41,9 +41,11 @@ export async function get_doctor_patients(
 						like(patients.last_names, `%${search_params?.search}%`),
 						like(patients.phone, `%${search_params?.search}%`),
 						like(patients.age, `%${search_params?.search}%`),
-					)
-				)
-			).limit(10).offset(!search_params?.page ? 0 : search_params.page * 10);
+					),
+				),
+			)
+			.limit(10)
+			.offset(!search_params?.page ? 0 : search_params.page * 10);
 
 		return {
 			success: true,
