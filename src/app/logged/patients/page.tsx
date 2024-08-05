@@ -62,9 +62,9 @@ export default async function Page({
 	if (search)
 		conditions.push(
 			or(
-				like(patients.names, `%${search ?? ''}%`),
-				like(patients.last_names, `%${search ?? ''}%`),
-				like(patients.phone, `%${search ?? ''}%`),
+				like(patients.names, `%${search}%`),
+				like(patients.last_names, `%${search}%`),
+				like(patients.phone, `%${search}%`),
 			),
 		);
 

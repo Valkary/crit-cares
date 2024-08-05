@@ -33,17 +33,13 @@ export default function PatientAnalytics({
 }) {
 	function countAllAdmissions(): number {
 		let count = 0;
-		for (const { admissions } of chart_data) {
-			count += admissions;
-		}
+		for (const { admissions } of chart_data) count += admissions;
 		return count;
 	}
 
 	function countAllDischarges(): number {
 		let count = 0;
-		for (const { discharges } of chart_data) {
-			count += discharges;
-		}
+		for (const { discharges } of chart_data) count += discharges;
 		return count;
 	}
 
