@@ -21,7 +21,7 @@ import Filters from './filters';
 
 const patient_search_schema = z.object({
 	search: z.string().optional(),
-	page: z.coerce.number().optional(),
+	page: z.coerce.number().min(0).optional(),
 	exitus_letalis: z.enum(['todos', 'true', 'false']).optional(),
 	mechanical_ventilation: z.enum(['todos', 'true', 'false']).optional(),
 	discharged: z.enum(['todos', 'true', 'false']).optional(),
@@ -42,8 +42,9 @@ export default async function Page({
 }) {
 	const token = cookies().get('token')?.value;
 	const doctor = await validate_user_token(token);
+	const { success } = patient_search_schema.safeParse(searchParams);
 
-	if (!doctor) return redirect('/login?toast=error&msg=Usuario no definido');
+	if (!doctor || !success) return redirect('/login?toast=error&msg=Usuario no definido');
 
 	const {
 		page,
