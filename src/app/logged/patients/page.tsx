@@ -106,7 +106,7 @@ export default async function Page({
 	const filtered_patients = db
 		.select()
 		.from(patients)
-		.where(and(eq(patients.doctor_id, doctor.id), ...conditions));
+		.where(and(...conditions));
 
 	const total_pages = Math.ceil((await filtered_patients).length / row_limit);
 
@@ -118,7 +118,7 @@ export default async function Page({
 		<Table>
 			<TableCaption>Tabla de pacientes</TableCaption>
 			<Filters
-				page={Number(searchParams?.page) || 0}
+				page={page || 0}
 				total_pages={total_pages}
 			/>
 			<TableBody>

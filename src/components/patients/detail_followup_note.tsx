@@ -6,7 +6,7 @@ import {
 	get_survival_percentage,
 } from '~/data/functions/apache_score';
 import { db } from '~/server/db';
-import { apache_scores, follow_up_notes, patients } from '~/server/db/schema';
+import { apache_scores, followup_notes, patients } from '~/server/db/schema';
 
 export default async function DetailFollowupNote({
 	note_id,
@@ -14,12 +14,12 @@ export default async function DetailFollowupNote({
 	const patient_note = (
 		await db
 			.select({
-				note_id: follow_up_notes.id,
+				note_id: followup_notes.id,
 				patient_id: patients.id,
 				patient_name: sql<string>`concat(${patients.names},' ',${patients.last_names})`,
-				note_title: follow_up_notes.title,
-				note_description: follow_up_notes.description,
-				note_date: follow_up_notes.creation_date,
+				note_title: followup_notes.title,
+				note_description: followup_notes.description,
+				note_date: followup_notes.creation_date,
 				apache_score: {
 					age: apache_scores.age,
 					temperature: apache_scores.temperature,
@@ -32,12 +32,12 @@ export default async function DetailFollowupNote({
 					creatinine: apache_scores.creatinine,
 				},
 			})
-			.from(follow_up_notes)
-			.where(eq(follow_up_notes.id, note_id))
-			.innerJoin(patients, eq(patients.id, follow_up_notes.patient_id))
+			.from(followup_notes)
+			.where(eq(followup_notes.id, note_id))
+			.innerJoin(patients, eq(patients.id, followup_notes.patient_id))
 			.leftJoin(
 				apache_scores,
-				eq(follow_up_notes.apache_score_id, apache_scores.id),
+				eq(followup_notes.apache_score_id, apache_scores.id),
 			)
 	)[0];
 

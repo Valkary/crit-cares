@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 import { env } from '~/env';
 import { db } from '~/server/db';
-import { apache_scores, follow_up_notes, users } from '~/server/db/schema';
+import { apache_scores, followup_notes, users } from '~/server/db/schema';
 import type { CreationResult, User } from '~/types';
 import {
 	type CreateFollowupNoteSchema,
@@ -67,7 +67,7 @@ export async function create_followup_note(
 					error_msg: 'Error creating followup note',
 				};
 
-			await db.insert(follow_up_notes).values({
+			await db.insert(followup_notes).values({
 				title,
 				doctor_id: doctor.id,
 				patient_id: patient_id,
@@ -75,7 +75,7 @@ export async function create_followup_note(
 				apache_score_id: apache_score_row.id,
 			});
 		} else {
-			await db.insert(follow_up_notes).values({
+			await db.insert(followup_notes).values({
 				title,
 				doctor_id: doctor.id,
 				patient_id: patient_id,
