@@ -1,16 +1,35 @@
 import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
+export const user_roles = sqliteTable('user_roles', {
+	id: integer('id').primaryKey(),
+	name: text('name').notNull(),
+	read: integer('read', { mode: 'boolean' })
+		.notNull()
+		.$default(() => false),
+	write: integer('write', { mode: 'boolean' })
+		.notNull()
+		.$default(() => false),
+	delete: integer('delete', { mode: 'boolean' })
+		.notNull()
+		.$default(() => false),
+	update: integer('update', { mode: 'boolean' })
+		.notNull()
+		.$default(() => false),
+});
+
 export const users = sqliteTable('users', {
 	id: integer('id').primaryKey(),
 	email: text('email', { length: 255 }).notNull(),
 	names: text('names', { length: 255 }).notNull(),
 	last_names: text('last_names', { length: 255 }).notNull(),
 	password_hash: text('password_hash', { length: 60 }).notNull(),
-	role: text('role', {
-		enum: ['admin', 'doctor', 'secretary', 'readonly'],
-	}).notNull(),
+	role_id: integer('role_id')
+		.references(() => user_roles.id)
+		.notNull(),
 	phone: text('phone').notNull(),
-	creation_date: integer('creation_date', { mode: 'timestamp' }).notNull(),
+	creation_date: integer('creation_date', { mode: 'timestamp' })
+		.notNull()
+		.$default(() => new Date()),
 });
 
 export const patient_documents = sqliteTable('patient_documents', {
@@ -20,9 +39,9 @@ export const patient_documents = sqliteTable('patient_documents', {
 		.notNull(),
 	name: text('name', { length: 255 }).notNull(),
 	route: text('route', { length: 510 }).notNull(),
-	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
-		() => new Date(),
-	),
+	creation_date: integer('creation_date', { mode: 'timestamp' })
+		.notNull()
+		.$default(() => new Date()),
 });
 
 export const patients = sqliteTable('patients', {
@@ -38,14 +57,11 @@ export const patients = sqliteTable('patients', {
 	exitus_letalis: integer('exitus_letalis', { mode: 'boolean' }).$default(
 		() => false,
 	),
-	doctor_id: integer('doctor_id')
-		.references(() => users.id)
-		.notNull(),
 	discharged: integer('discharged', { mode: 'boolean' }).$default(() => false),
 	discharge_date: integer('discharge_date', { mode: 'timestamp' }),
-	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
-		() => new Date(),
-	),
+	creation_date: integer('creation_date', { mode: 'timestamp' })
+		.notNull()
+		.$default(() => new Date()),
 });
 
 export const apache_scores = sqliteTable('apache_scores', {
@@ -62,9 +78,9 @@ export const apache_scores = sqliteTable('apache_scores', {
 	sodium: real('sodium').notNull(),
 	potassium: real('potassium').notNull(),
 	creatinine: real('creatinine').notNull(),
-	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
-		() => new Date(),
-	),
+	creation_date: integer('creation_date', { mode: 'timestamp' })
+		.notNull()
+		.$default(() => new Date()),
 });
 
 export const follow_up_notes = sqliteTable('follow_up_notes', {
@@ -80,7 +96,7 @@ export const follow_up_notes = sqliteTable('follow_up_notes', {
 	apache_score_id: integer('apache_score_id').references(
 		() => apache_scores.id,
 	),
-	creation_date: integer('creation_date', { mode: 'timestamp' }).$default(
-		() => new Date(),
-	),
+	creation_date: integer('creation_date', { mode: 'timestamp' })
+		.notNull()
+		.$default(() => new Date()),
 });
