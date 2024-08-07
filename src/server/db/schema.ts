@@ -34,6 +34,9 @@ export const users = sqliteTable('users', {
 
 export const doctors = sqliteTable('doctors', {
 	id: integer('id').primaryKey(),
+	user_id: integer('user_id')
+		.references(() => users.id)
+		.notNull(),
 	specialty: text('specialty').notNull(),
 	identity_card: integer('identity_card').notNull(),
 	creation_date: integer('creation_date', { mode: 'timestamp' })
@@ -81,24 +84,24 @@ export const treatments = sqliteTable('treatments', {
 
 export const admissions = sqliteTable('admissions', {
 	id: integer('id').primaryKey(),
-	event_id: integer('event_id')
+	treatment_id: integer('treatment_id')
 		.references(() => treatments.id)
 		.notNull(),
 	doctor_id: integer('doctor_id')
-		.references(() => users.id)
+		.references(() => doctors.id)
 		.notNull(),
-	reason: text('motive').notNull(),
+	date: integer('date', { mode: 'timestamp' }).notNull(),
+	reason: text('reason').notNull(),
 	record: text('record').notNull(),
 	usual_treatment: text('usual_treatment').notNull(),
 	current_ailment: text('current_ailment').notNull(),
 	physical_exploration: text('physical_exploration').notNull(),
 	complementary_exams: text('complementary_exams').notNull(),
 	diagnostics: text('diagnostics').notNull(),
-	prognosis: text('prognosis').notNull(),
+	prognosis: text('prognosis', { enum: ['grievous'] }).notNull(),
 	apache_score_id: integer('apache_score_id')
 		.references(() => apache_scores.id)
 		.notNull(),
-	date: integer('date', { mode: 'timestamp' }).notNull(),
 	mechanical_ventilation: integer('mechanical_ventilation', {
 		mode: 'boolean',
 	})
@@ -112,15 +115,20 @@ export const admissions = sqliteTable('admissions', {
 
 export const discharges = sqliteTable('discharges', {
 	id: integer('id').primaryKey(),
-	event_id: integer('event_id')
+	treatment_id: integer('treatment_id')
 		.references(() => treatments.id)
 		.notNull(),
 	doctor_id: integer('doctor_id')
-		.references(() => users.id)
+		.references(() => doctors.id)
 		.notNull(),
-	reason: text('motive').notNull(),
-	clinical_report: text('clinical_report').notNull(),
 	date: integer('date', { mode: 'timestamp' }).notNull(),
+	reason: text('reason', {
+		enum: ['improvement', 'self-checkout', 'death', 'transfer'],
+	}).notNull(),
+	transfer_to: text('transfer_to'),
+	clinical_report: text('clinical_report').notNull(),
+	prognosis: text('prognosis', { enum: ['grievous'] }).notNull(),
+	exit_diagnosis: text('exit_diagnosis'),
 	creation_date: integer('creation_date', { mode: 'timestamp' })
 		.notNull()
 		.$default(() => new Date()),
@@ -129,11 +137,11 @@ export const discharges = sqliteTable('discharges', {
 
 export const followup_notes = sqliteTable('followup_notes', {
 	id: integer('id').primaryKey(),
-	event_id: integer('event_id')
+	treatment_id: integer('treatment_id')
 		.references(() => treatments.id)
 		.notNull(),
 	doctor_id: integer('doctor_id')
-		.references(() => users.id)
+		.references(() => doctors.id)
 		.notNull(),
 	title: text('title').notNull(),
 	description: text('description'),
@@ -150,6 +158,9 @@ export const apache_scores = sqliteTable('apache_scores', {
 	id: integer('id').primaryKey(),
 	patient_id: integer('patient_id')
 		.references(() => patients.id)
+		.notNull(),
+	doctor_id: integer('doctor_id')
+		.references(() => doctors.id)
 		.notNull(),
 	age: integer('age').notNull(),
 	temperature: real('temperature').notNull(),
