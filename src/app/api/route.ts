@@ -2,7 +2,7 @@ import { fromUnixTime } from 'date-fns';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { db } from '~/server/db';
-import { patients, user_roles, users } from '~/server/db/schema';
+import { patients, cat_user_role, users } from '~/server/db/schema';
 
 type InsertResult = {
 	success: boolean;
@@ -11,14 +11,38 @@ type InsertResult = {
 
 async function insert_roles(): Promise<InsertResult> {
 	try {
-		const roles = [
-			{ name: 'admin', read: true, write: true, update: true, delete: true },
-			{ name: 'doctor', read: true, write: true, update: true },
-			{ name: 'secretary', read: true, write: true, update: true },
-			{ name: 'readonly', read: true },
+		const roles: (typeof cat_user_role.$inferInsert)[] = [
+			{
+				name: 'admin',
+				create_discharges: true,
+				create_followup_notes: true,
+				create_patients: true,
+				create_treatments: true,
+				create_users: true,
+				view_patient_documents: true,
+			},
+			{
+				name: 'doctor',
+				create_discharges: true,
+				create_followup_notes: true,
+				create_patients: true,
+				create_treatments: true,
+				create_users: true,
+				view_patient_documents: true,
+			},
+			{
+				name: 'secretary',
+				create_discharges: true,
+				create_followup_notes: true,
+				create_patients: true,
+				create_treatments: true,
+				create_users: true,
+				view_patient_documents: true,
+			},
+			{ name: 'readonly', view_patient_documents: true },
 		];
 
-		await db.insert(user_roles).values(roles);
+		await db.insert(cat_user_role).values(roles);
 		return { success: true, table: 'roles' };
 	} catch (err) {
 		console.error('Error inserting roles:', err);
@@ -28,9 +52,8 @@ async function insert_roles(): Promise<InsertResult> {
 
 async function insert_mock_users(): Promise<InsertResult> {
 	try {
-		const users_to_insert = [
+		const users_to_insert: (typeof users.$inferInsert)[] = [
 			{
-				id: 1,
 				email: 'pepoclesng@gmail.com',
 				names: 'José',
 				last_names: 'Salcedo Uribe',
@@ -53,23 +76,10 @@ async function insert_mock_users(): Promise<InsertResult> {
 async function insert_mock_patients(): Promise<InsertResult> {
 	try {
 		const file_path = path.join(process.cwd(), 'files/MOCK_DATA.json');
-		const mock_data = JSON.parse(await readFile(file_path, 'utf8'));
-
-		type NewPatient = typeof patients.$inferInsert;
-		type JSONPatient = Omit<NewPatient, 'admission_date' | 'discharge_date' | 'creation_date'> & {
-			admission_date: number;
-			discharge_date: number;
-			creation_date: number;
-		};
-
-		const new_mock_data = mock_data.map((p: JSONPatient) => ({
-			...p,
-			admission_date: fromUnixTime(p.admission_date),
-			discharge_date: p.discharge_date ? fromUnixTime(p.discharge_date) : null,
-			creation_date: fromUnixTime(p.creation_date),
-		}));
-
-		await db.insert(patients).values(new_mock_data);
+		const mock_data = JSON.parse(
+			await readFile(file_path, 'utf8'),
+		) as (typeof patients.$inferInsert)[];
+		await db.insert(patients).values(mock_data);
 		return { success: true, table: 'patients' };
 	} catch (err) {
 		console.error('Error inserting patients:', err);
@@ -101,3 +111,8 @@ async function execute_migration() {
 }
 
 execute_migration();
+
+export function GET() {
+	execute_migration();
+	return Response.json({ success: true });
+}

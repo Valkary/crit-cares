@@ -1,18 +1,26 @@
 import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
-export const user_roles = sqliteTable('user_roles', {
+export const cat_user_role = sqliteTable('cat_user_role', {
 	id: integer('id').primaryKey(),
-	name: text('name').notNull(),
-	read: integer('read', { mode: 'boolean' })
+	name: text('name').notNull().unique(),
+	create_users: integer('create_users', { mode: 'boolean' })
 		.notNull()
 		.$default(() => false),
-	write: integer('write', { mode: 'boolean' })
+	create_patients: integer('create_patients', { mode: 'boolean' })
 		.notNull()
 		.$default(() => false),
-	delete: integer('delete', { mode: 'boolean' })
+	view_patient_documents: integer('view_patient_documents', {
+		mode: 'boolean',
+	}).$default(() => false),
+	create_treatments: integer('create_treatments', { mode: 'boolean' })
 		.notNull()
 		.$default(() => false),
-	update: integer('update', { mode: 'boolean' })
+	create_discharges: integer('create_discharges', { mode: 'boolean' })
+		.notNull()
+		.$default(() => false),
+	create_followup_notes: integer('create_followup_notes', {
+		mode: 'boolean',
+	})
 		.notNull()
 		.$default(() => false),
 });
@@ -24,7 +32,7 @@ export const users = sqliteTable('users', {
 	last_names: text('last_names', { length: 256 }).notNull(),
 	password_hash: text('password_hash', { length: 60 }).notNull(),
 	role_id: integer('role_id')
-		.references(() => user_roles.id)
+		.references(() => cat_user_role.id)
 		.notNull(),
 	phone: text('phone').notNull(),
 	creation_date: integer('creation_date', { mode: 'timestamp' })
@@ -71,15 +79,30 @@ export const patients = sqliteTable('patients', {
 	creator_id: integer('creator_id').references(() => users.id),
 });
 
+export const cat_treatment_status = sqliteTable('cat_treatment_status', {
+	id: integer('id').primaryKey(),
+	name: text('name', {
+		enum: ['ACTIVO', 'ALTA MÉDICA', 'EXITUS LETALIS'],
+	}).unique(),
+});
+
 export const treatments = sqliteTable('treatments', {
 	id: integer('id').primaryKey(),
 	patient_id: integer('patient_id')
 		.references(() => patients.id)
 		.notNull(),
+	status_id: integer('status_id')
+		.references(() => cat_treatment_status.id)
+		.notNull(),
 	creation_date: integer('creation_date', { mode: 'timestamp' })
 		.notNull()
 		.$default(() => new Date()),
 	creator_id: integer('creator_id').references(() => users.id),
+});
+
+export const cat_prognosis = sqliteTable('cat_prognosis', {
+	id: integer('id').primaryKey(),
+	name: text('name', { enum: ['GRAVE'] }).unique(),
 });
 
 export const admissions = sqliteTable('admissions', {
@@ -98,7 +121,9 @@ export const admissions = sqliteTable('admissions', {
 	physical_exploration: text('physical_exploration').notNull(),
 	complementary_exams: text('complementary_exams').notNull(),
 	diagnostics: text('diagnostics').notNull(),
-	prognosis: text('prognosis', { enum: ['grievous'] }).notNull(),
+	prognosis_id: integer('prognosis_id')
+		.references(() => cat_prognosis.id)
+		.notNull(),
 	apache_score_id: integer('apache_score_id')
 		.references(() => apache_scores.id)
 		.notNull(),
@@ -127,7 +152,9 @@ export const discharges = sqliteTable('discharges', {
 	}).notNull(),
 	transfer_to: text('transfer_to'),
 	clinical_report: text('clinical_report').notNull(),
-	prognosis: text('prognosis', { enum: ['grievous'] }).notNull(),
+	prognosis_id: integer('prognosis_id')
+		.references(() => cat_prognosis.id)
+		.notNull(),
 	exit_diagnosis: text('exit_diagnosis'),
 	creation_date: integer('creation_date', { mode: 'timestamp' })
 		.notNull()
